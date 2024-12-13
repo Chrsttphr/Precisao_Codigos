@@ -1,52 +1,61 @@
-Sub MoverArquivosParaPastaPrincipal()
-
+Sub MoverArquivosEspecificosParaPastaPrincipal()
     Dim pastaPrincipal As String
-    Dim subPasta As Object
-    Dim arquivo As String
     Dim fso As Object
-    Dim folder As Object
-    
-    ' Define o caminho da pasta principal
-    pastaPrincipal = "C:CAMINHO DA PASTA PRINCIPAL"
-    
+    Dim arquivo As String
+    Dim subPastasSelecionadas As Collection
+    Dim dialog As FileDialog
+
+    ' Caminho da pasta principal
+    pastaPrincipal = "!!!!!!!PASTA PRINCIPAL!!!!!"
+
     ' Inicializa o FileSystemObject
     Set fso = CreateObject("Scripting.FileSystemObject")
-    
-    ' Verifica se a pasta principal existe
-    If fso.FolderExists(pastaPrincipal) Then
-        Set folder = fso.GetFolder(pastaPrincipal)
-        
-        ' Percorre todas as subpastas da pasta principal
-        For Each subPasta In folder.SubFolders
-            ' Procura por arquivos XML em cada subpasta
-            arquivo = Dir(subPasta.Path & "\*.xml")
-            
-            Do While arquivo <> ""
-                ' Move o arquivo XML para a pasta principal
-                fso.MoveFile Source:=subPasta.Path & "\" & arquivo, Destination:=pastaPrincipal & "\" & arquivo
-                ' Procura o próximo arquivo XML
-                arquivo = Dir
-            Loop
-            
-            ' Procura por arquivos PDF em cada subpasta
-            arquivo = Dir(subPasta.Path & "\*.pdf")
-            
-            Do While arquivo <> ""
-                ' Move o arquivo PDF para a pasta principal
-                fso.MoveFile Source:=subPasta.Path & "\" & arquivo, Destination:=pastaPrincipal & "\" & arquivo
-                ' Procura o próximo arquivo PDF
-                arquivo = Dir
-            Loop
-        Next subPasta
-        
-        MsgBox "Todos os arquivos XML e PDF foram movidos para a pasta principal.", vbInformation
-        
-    Else
-        MsgBox "A pasta principal não foi encontrada. Verifique o caminho.", vbExclamation
-    End If
-    
-    ' Libera o objeto FileSystemObject
-    Set fso = Nothing
-    Set folder = Nothing
 
+    ' Verifica se a pasta principal existe
+    If Not fso.FolderExists(pastaPrincipal) Then
+        MsgBox "A pasta principal não foi encontrada. Verifique o caminho.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Inicializa o FileDialog para selecionar pastas
+    Set dialog = Application.FileDialog(msoFileDialogFolderPicker)
+    With dialog
+        .Title = "Selecione as subpastas a serem processadas"
+        .InitialFileName = pastaPrincipal
+        .AllowMultiSelect = True
+
+        ' Verifica se o usuário selecionou pastas
+        If .Show = -1 Then
+            Set subPastasSelecionadas = New Collection
+            Dim i As Integer
+            For i = 1 To .SelectedItems.Count
+                subPastasSelecionadas.Add .SelectedItems(i)
+            Next i
+        Else
+            MsgBox "Nenhuma subpasta foi selecionada. Operação cancelada.", vbExclamation
+            Exit Sub
+        End If
+    End With
+
+    ' Processa as subpastas selecionadas
+    Dim subPastaPath As Variant
+    For Each subPastaPath In subPastasSelecionadas
+        ' Verifica se a subpasta existe
+        If fso.FolderExists(subPastaPath) Then
+            ' Move arquivos PDF
+            arquivo = Dir(subPastaPath & "\*.pdf")
+            Do While arquivo <> ""
+                fso.MoveFile Source:=subPastaPath & "\" & arquivo, Destination:=pastaPrincipal & "\" & arquivo
+                arquivo = Dir
+            Loop
+        Else
+            MsgBox "A subpasta '" & subPastaPath & "' não foi encontrada.", vbExclamation
+        End If
+    Next subPastaPath
+
+    MsgBox "Arquivos PDF movidos com sucesso para a pasta principal.", vbInformation
+
+    ' Libera os objetos
+    Set fso = Nothing
+    Set dialog = Nothing
 End Sub
