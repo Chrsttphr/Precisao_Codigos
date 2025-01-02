@@ -5,11 +5,23 @@ Sub MoverArquivosEspecificosParaPastaPrincipal()
     Dim subPastasSelecionadas As Collection
     Dim dialog As FileDialog
 
-    ' Caminho da pasta principal
-    pastaPrincipal = "!!!!!!!PASTA PRINCIPAL!!!!!"
-
     ' Inicializa o FileSystemObject
     Set fso = CreateObject("Scripting.FileSystemObject")
+
+    ' Inicializa o FileDialog para selecionar a pasta principal
+    Set dialog = Application.FileDialog(msoFileDialogFolderPicker)
+    With dialog
+        .Title = "Selecione a pasta principal"
+        .AllowMultiSelect = False
+        
+        ' Verifica se o usuário selecionou uma pasta
+        If .Show = -1 Then
+            pastaPrincipal = .SelectedItems(1)
+        Else
+            MsgBox "Nenhuma pasta principal foi selecionada. Operação cancelada.", vbExclamation
+            Exit Sub
+        End If
+    End With
 
     ' Verifica se a pasta principal existe
     If Not fso.FolderExists(pastaPrincipal) Then
@@ -17,14 +29,13 @@ Sub MoverArquivosEspecificosParaPastaPrincipal()
         Exit Sub
     End If
 
-    ' Inicializa o FileDialog para selecionar pastas
+    ' Inicializa o FileDialog para selecionar subpastas
     Set dialog = Application.FileDialog(msoFileDialogFolderPicker)
     With dialog
         .Title = "Selecione as subpastas a serem processadas"
-        .InitialFileName = pastaPrincipal
         .AllowMultiSelect = True
 
-        ' Verifica se o usuário selecionou pastas
+        ' Verifica se o usuário selecionou subpastas
         If .Show = -1 Then
             Set subPastasSelecionadas = New Collection
             Dim i As Integer
