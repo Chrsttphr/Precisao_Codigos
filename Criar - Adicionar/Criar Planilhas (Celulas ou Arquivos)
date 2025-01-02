@@ -1,0 +1,123 @@
+Sub CriarPlanilhasDeCélulasOuArquivos()
+
+    Dim escolha As Integer
+    Dim intervalo As Range
+    Dim fso As Object
+    Dim arquivoOuPasta As Variant
+    Dim novaPlanilha As Worksheet
+    Dim nomePlanilha As String
+    Dim i As Integer
+    Dim dialog As FileDialog
+    Dim caminhoPasta As String
+    Dim nomePlanilhaOriginal As String
+    
+    ' Inicializa o FileSystemObject
+    Set fso = CreateObject("Scripting.FileSystemObject")
+
+    ' Opção para o usuário escolher se quer usar células ou arquivos/pastas
+    escolha = MsgBox("Escolha a opção para criar planilhas:" & vbCrLf & _
+                     "Sim - Usar intervalo de células" & vbCrLf & _
+                     "Não - Usar arquivos", vbYesNoCancel + vbQuestion, "Escolha uma opção")
+
+    If escolha = vbCancel Then
+        Exit Sub ' Se o usuário cancelar, a macro é interrompida
+    End If
+
+    ' Se a opção for Sim (intervalo de células)
+    If escolha = vbYes Then
+        ' Selecionar o intervalo de células que contém os nomes das novas planilhas
+        On Error Resume Next
+        Set intervalo = Application.InputBox("Selecione o intervalo com os nomes das planilhas", Type:=8)
+        On Error GoTo 0
+
+        If intervalo Is Nothing Then
+            MsgBox "Nenhum intervalo foi selecionado. Operação cancelada.", vbExclamation
+            Exit Sub
+        End If
+
+        ' Criar uma planilha para cada nome no intervalo
+        For Each celula In intervalo
+            If celula.Value <> "" Then
+                nomePlanilha = celula.Value
+                nomePlanilha = LimparNomePlanilha(nomePlanilha)
+                
+                ' Verifica se já existe uma planilha com o mesmo nome
+                On Error Resume Next
+                Set novaPlanilha = ThisWorkbook.Sheets(nomePlanilha)
+                On Error GoTo 0
+
+                If novaPlanilha Is Nothing Then
+                    ' Cria a nova planilha com o nome da célula
+                    Set novaPlanilha = ThisWorkbook.Sheets.Add
+                    novaPlanilha.Name = nomePlanilha
+                End If
+                Set novaPlanilha = Nothing
+            End If
+        Next celula
+
+    ' Se a opção for Não (usar arquivos ou pastas)
+    ElseIf escolha = vbNo Then
+        ' Inicializa o FileDialog para selecionar arquivos ou pastas
+        Set dialog = Application.FileDialog(msoFileDialogFilePicker)
+        dialog.Title = "Selecione os arquivos ou pastas"
+        dialog.AllowMultiSelect = True
+        dialog.Filters.Clear
+        dialog.Filters.Add "Todos os Arquivos", "*.*"
+        
+        ' Exibe o diálogo e verifica se o usuário selecionou arquivos ou pastas
+        If dialog.Show = -1 Then
+            ' Processa cada arquivo ou pasta selecionado
+            For Each arquivoOuPasta In dialog.SelectedItems
+                If fso.FolderExists(arquivoOuPasta) Or fso.FileExists(arquivoOuPasta) Then
+                    nomePlanilha = fso.GetFileName(arquivoOuPasta)
+                    nomePlanilha = Replace(nomePlanilha, ".", "_") ' Substitui o ponto por underscore para evitar problemas de nome de planilha
+                    
+                    nomePlanilha = LimparNomePlanilha(nomePlanilha)
+                    
+                    ' Verifica se já existe uma planilha com o mesmo nome
+                    On Error Resume Next
+                    Set novaPlanilha = ThisWorkbook.Sheets(nomePlanilha)
+                    On Error GoTo 0
+
+                    If novaPlanilha Is Nothing Then
+                        ' Cria a nova planilha com o nome do arquivo ou pasta
+                        Set novaPlanilha = ThisWorkbook.Sheets.Add
+                        novaPlanilha.Name = nomePlanilha
+                    End If
+                    Set novaPlanilha = Nothing
+                End If
+            Next arquivoOuPasta
+        Else
+            MsgBox "Nenhum arquivo ou pasta foi selecionado. Operação cancelada.", vbExclamation
+            Exit Sub
+        End If
+    End If
+
+    MsgBox "As planilhas foram criadas com sucesso!", vbInformation
+
+    ' Libera os objetos
+    Set fso = Nothing
+    Set dialog = Nothing
+
+End Sub
+
+' Função para limpar o nome da planilha e garantir que seja válido
+Function LimparNomePlanilha(nome As String) As String
+    Dim caracteresInvalidos As String
+    Dim i As Integer
+
+    ' Lista de caracteres inválidos para nomes de planilhas
+    caracteresInvalidos = "/\[]:?*"
+    
+    ' Remove caracteres inválidos do nome
+    For i = 1 To Len(caracteresInvalidos)
+        nome = Replace(nome, Mid(characteresInvalidos, i, 1), "_")
+    Next i
+
+    ' Limita o comprimento do nome para 31 caracteres
+    If Len(nome) > 31 Then
+        nome = Left(nome, 31)
+    End If
+
+    LimparNomePlanilha = nome
+End Function
