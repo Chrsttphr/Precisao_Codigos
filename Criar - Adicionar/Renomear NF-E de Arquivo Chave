@@ -8,9 +8,20 @@ Sub RenomearArquivosNF()
     Dim numeroNF As String
     Dim caminhoAtual As String
     Dim caminhoNovo As String
+    Dim dialog As Object
+    Dim posicaoNumero As Long
     
-    ' Definir o caminho da pasta onde os arquivos estão
-    pastaOrigem = "C:\Users\Raphaela\Desktop\Sped\NF\" ' Altere para o caminho da sua pasta
+    ' Abrir janela para selecionar a pasta de origem
+    Set dialog = Application.FileDialog(msoFileDialogFolderPicker)
+    dialog.Title = "Selecione a pasta onde estão os arquivos PDF"
+    
+    ' Exibe a caixa de diálogo
+    If dialog.Show = -1 Then
+        pastaOrigem = dialog.SelectedItems(1)
+    Else
+        MsgBox "Nenhuma pasta foi selecionada. A macro será encerrada."
+        Exit Sub
+    End If
     
     ' Verificar se a pasta termina com "\"
     If Right(pastaOrigem, 1) <> "\" Then
@@ -29,35 +40,18 @@ Sub RenomearArquivosNF()
         If LCase(fso.GetExtensionName(arquivo.Name)) = "pdf" Then
             nomeAtual = arquivo.Name
             
-            ' Verifica se o nome já foi renomeado duas vezes (ou seja, contém dois prefixos duplicados)
-            If InStr(nomeAtual, " - ") > 0 Then
-                ' Extrai o prefixo inicial
-                Dim prefixo1 As String
-                Dim posHifen As Long
-                posHifen = InStr(nomeAtual, " - ")
-                prefixo1 = Left(nomeAtual, posHifen - 1)
+            ' Verifica se o nome já foi renomeado (contém o prefixo "NF-E")
+            If InStr(nomeAtual, "NF-E") = 0 Then
+                ' Encontra a posição dos últimos 10 números
+                posicaoNumero = Len(nomeAtual) - 15
                 
-                ' Verifica se o prefixo aparece duas vezes no nome do arquivo
-                If InStr(posHifen + 3, nomeAtual, prefixo1 & " - ") > 0 Then
-                    ' Corrige o nome removendo o segundo prefixo duplicado e o hífen adicional
-                    novoNome = prefixo1 & Mid(nomeAtual, posHifen + Len(prefixo1) + 4)
+                ' Certifica-se de que a posição inicial é válida
+                If posicaoNumero > 9 Then
+                    ' Extrai os 9 dígitos antes dos últimos 10 números
+                    numeroNF = Mid(nomeAtual, posicaoNumero - 6, 8)
                     
-                    ' Constrói os caminhos completos
-                    caminhoAtual = pastaOrigem & nomeAtual
-                    caminhoNovo = pastaOrigem & novoNome
-                    
-                    ' Renomeia o arquivo
-                    Name caminhoAtual As caminhoNovo
-                End If
-            Else
-                ' Não foi renomeado ainda, realizar a renomeação
-                ' Verifica se o nome tem pelo menos 44 caracteres (para garantir que a estrutura do nome seja correta)
-                If Len(nomeAtual) >= 44 Then
-                    ' Extrai os 6 dígitos antes dos últimos 10 números
-                    numeroNF = Mid(nomeAtual, Len(nomeAtual) - 15, 6)
-                    
-                    ' Constrói o novo nome
-                    novoNome = numeroNF & " - " & nomeAtual
+                    ' Constrói o novo nome no formato desejado
+                    novoNome = "NF-E " & numeroNF & " - " & nomeAtual
                     
                     ' Constrói os caminhos completos
                     caminhoAtual = pastaOrigem & nomeAtual
@@ -70,5 +64,5 @@ Sub RenomearArquivosNF()
         End If
     Next arquivo
     
-    MsgBox "Arquivos renomeados e corrigidos com sucesso!"
+    MsgBox "Arquivos renomeados com sucesso!"
 End Sub
