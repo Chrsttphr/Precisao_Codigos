@@ -1,34 +1,106 @@
-Sub CriarPastas()
-    Dim ws As Worksheet
+Sub CriarPastasAvancado()
+    Dim opcao As Integer
     Dim pastaBase As String
+    Dim dlg As FileDialog
+    Dim intervalo As Range
+    Dim ws As Worksheet
     Dim celula As Range
-    Dim ultimaLinha As Long
     Dim novaPasta As String
-    
-    ' Defina a planilha onde está a lista de pastas
-    Set ws = ThisWorkbook.Sheets("HiperLink")
-    
-    ' Defina a pasta base onde as novas pastas serão criadas
-    pastaBase = "\\192.168.1.251\Arquivos\Colaboradores\CHRISTOPHER\"
-    
-    ' Encontre a última linha preenchida na coluna A
-    ultimaLinha = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
-    
-    ' Iterar sobre cada célula da coluna A
-    For Each celula In ws.Range("A4:A" & ultimaLinha)
-        novaPasta = pastaBase & celula.Value
-        ' Verificar se a pasta já existe
-        If Dir(novaPasta, vbDirectory) = "" Then
-            ' Se não existir, criar a pasta
-            On Error Resume Next
-            MkDir novaPasta
-            If Err.Number <> 0 Then
-                MsgBox "Erro ao criar a pasta: " & novaPasta & vbCrLf & Err.Description
-                Err.Clear
-            End If
-            On Error GoTo 0
+    Dim pastaSelecionada As FileDialog
+    Dim pastasSelecionadas As Collection
+    Dim i As Long
+    Dim pastaNova As String
+    Dim fso As Object
+    Dim pastaOrigem As String
+    Dim pastaExistente As Variant
+
+    ' Exibir a janela para selecionar a pasta base
+    Set dlg = Application.FileDialog(msoFileDialogFolderPicker)
+    With dlg
+        .Title = "Selecione a pasta base"
+        If .Show <> -1 Then
+            MsgBox "Operação cancelada pelo usuário.", vbInformation
+            Exit Sub
         End If
-    Next celula
-    
-    MsgBox "Processo concluído!"
+        pastaBase = .SelectedItems(1) & "\"
+    End With
+
+    ' Exibir opções ao usuário
+    opcao = MsgBox("Escolha uma opção:" & vbCrLf & _
+                   "Sim - Ler Listagem de Células" & vbCrLf & _
+                   "Não - Selecionar Pastas Existentes", _
+                   vbYesNoCancel + vbQuestion, "Opções")
+
+    If opcao = vbCancel Then
+        MsgBox "Operação cancelada pelo usuário.", vbInformation
+        Exit Sub
+    End If
+
+    ' Opção 1: Ler Listagem de Células
+    If opcao = vbYes Then
+        ' Verificar se a planilha existe
+        On Error Resume Next
+        Set ws = ThisWorkbook.Sheets("Planilha1")
+        On Error GoTo 0
+
+        If ws Is Nothing Then
+            MsgBox "A planilha 'HiperLink' não foi encontrada.", vbCritical
+            Exit Sub
+        End If
+
+        ' Solicitar o intervalo
+        On Error Resume Next
+        Set intervalo = Application.InputBox("Selecione o intervalo de células:", "Selecionar Intervalo", Type:=8)
+        On Error GoTo 0
+
+        If intervalo Is Nothing Then
+            MsgBox "Operação cancelada pelo usuário.", vbInformation
+            Exit Sub
+        End If
+
+        ' Criar pastas com base no intervalo selecionado
+        For Each celula In intervalo
+            If Not IsEmpty(celula.Value) Then
+                novaPasta = pastaBase & celula.Value
+                If Dir(novaPasta, vbDirectory) = "" Then
+                    MkDir novaPasta
+                End If
+            End If
+        Next celula
+
+    ' Opção 2: Selecionar Pastas Existentes
+    ElseIf opcao = vbNo Then
+        ' Inicializar a coleção para armazenar as pastas selecionadas
+        Set pastasSelecionadas = New Collection
+
+        ' Abrir o diálogo para selecionar múltiplas pastas
+        Do
+            Set dlg = Application.FileDialog(msoFileDialogFolderPicker)
+            With dlg
+                .Title = "Selecione uma pasta existente (ou clique Cancelar para finalizar)"
+                If .Show = -1 Then
+                    pastasSelecionadas.Add .SelectedItems(1)
+                Else
+                    Exit Do
+                End If
+            End With
+        Loop
+
+        ' Verificar se pelo menos uma pasta foi selecionada
+        If pastasSelecionadas.Count = 0 Then
+            MsgBox "Nenhuma pasta foi selecionada.", vbInformation
+            Exit Sub
+        End If
+
+        ' Criar uma pasta com o mesmo nome em outra pasta base
+        Set fso = CreateObject("Scripting.FileSystemObject")
+        For Each pastaExistente In pastasSelecionadas
+            pastaNova = pastaBase & fso.GetFileName(pastaExistente)
+            If Dir(pastaNova, vbDirectory) = "" Then
+                MkDir pastaNova
+            End If
+        Next pastaExistente
+    End If
+
+    MsgBox "Processo concluído!", vbInformation
 End Sub
