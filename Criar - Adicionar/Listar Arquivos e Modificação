@@ -1,0 +1,60 @@
+Sub ListarArquivos()
+    ' OBS:
+    ' =DATA(ANO(B3) + 1;MÊS(B3);DIA(B3)) ---- Somar 1 ano na data ao lado para vencimentos anuais
+    ' =SE(C2 < HOJE(); "Vencido"; SE(C2 <= HOJE() + 7; "Atenção"; "No Prazo")) ---------- Legenda
+    
+    Dim ws As Worksheet
+    Dim pasta As String
+    Dim arquivo As String
+    Dim i As Integer
+    Dim fDialog As FileDialog
+    
+    ' Exibe uma janela para o usuário selecionar a pasta
+    Set fDialog = Application.FileDialog(msoFileDialogFolderPicker)
+    fDialog.Title = "Escolha uma pasta"
+    
+    ' Se o usuário escolher uma pasta
+    If fDialog.Show = -1 Then
+        pasta = fDialog.SelectedItems(1) & "\" ' Caminho da pasta escolhida
+    Else
+        MsgBox "Nenhuma pasta foi selecionada."
+        Exit Sub
+    End If
+    
+    ' Verifica se a planilha já existe
+    On Error Resume Next
+    Set ws = ThisWorkbook.Sheets("Lista de Arquivos")
+    On Error GoTo 0
+    
+    ' Se a planilha existir, exclui
+    If Not ws Is Nothing Then
+        Application.DisplayAlerts = False ' Desativa o alerta de exclusão
+        ws.Delete
+        Application.DisplayAlerts = True ' Ativa os alertas novamente
+    End If
+    
+    ' Cria uma nova planilha
+    Set ws = ThisWorkbook.Sheets.Add
+    ws.Name = "Lista de Arquivos"
+    
+    ' Define os cabeçalhos
+    ws.Cells(1, 1).Value = "Nome do Arquivo"
+    ws.Cells(1, 2).Value = "Data de Modificação"
+    
+    ' Inicializa o contador de linhas
+    i = 2
+    
+    ' Obtém o primeiro arquivo na pasta
+    arquivo = Dir(pasta & "*.*")
+    
+    ' Loop para listar todos os arquivos
+    Do While arquivo <> ""
+        ws.Cells(i, 1).Value = arquivo
+        ws.Cells(i, 2).Value = FileDateTime(pasta & arquivo)
+        i = i + 1
+        arquivo = Dir
+    Loop
+    
+    ' Ajusta a largura das colunas
+    ws.Columns("A:B").AutoFit
+End Sub
