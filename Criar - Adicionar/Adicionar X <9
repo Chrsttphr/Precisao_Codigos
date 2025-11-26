@@ -20,3 +20,8 @@ Sub MarcarCelulas()
     
     MsgBox "Processo concluído!"
 End Sub
+
+Macros em VBA que percorrem linhas de uma planilha para aplicar marcações baseadas em critérios são muito utilizadas para automatizar processos repetitivos no Excel. A lógica geral é simples: o código analisa cada linha dentro de um intervalo definido, verifica se uma condição específica é atendida e, caso positivo, realiza uma ação — normalmente marcar, preencher ou destacar células da mesma linha.
+Esse tipo de automação é útil em diversas situações, como validação de dados, identificação de registros incompletos, sinalização para revisão ou preparação para análises. Por exemplo, você pode criar uma macro que procura valores abaixo de um determinado limite, códigos com tamanho específico ou células vazias, e então marca essas linhas para facilitar filtros ou relatórios.
+A grande vantagem é que, ao invés de fazer essa verificação manualmente em milhares de linhas, a macro executa tudo em segundos, reduzindo erros e economizando tempo. Além disso, esse conceito pode ser adaptado para diferentes critérios e ações: desde preencher células com um texto, aplicar cores, até copiar dados para outra planilha.
+Em resumo, macros que buscam um padrão e marcam linhas que atendem ao critério são uma solução prática para quem trabalha com grandes volumes de dados e precisa garantir agilidade e precisão nos processos.
