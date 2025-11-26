@@ -66,3 +66,39 @@ Sub RenomearArquivosNF()
     
     MsgBox "Arquivos renomeados com sucesso!"
 End Sub
+
+✅ O que a macro faz
+Solicita ao usuário a pasta de origem
+Abre uma janela para selecionar a pasta onde estão os arquivos PDF.
+
+Prepara o caminho e objetos necessários
+Garante que o caminho da pasta termine com \.
+Cria um objeto FileSystemObject para manipular arquivos e pastas.
+
+Percorre todos os arquivos da pasta
+Verifica se o arquivo é um PDF.
+Ignora arquivos que já possuem o prefixo “NF-E” (para evitar renomear duas vezes).
+
+Extrai parte do nome original para compor o novo nome
+Calcula a posição dos dígitos que representam o número da nota fiscal.
+Usa Mid para pegar 8 caracteres (supostamente o número da NF).
+Constrói o novo nome no formato:
+NF-E [NúmeroNF] - [NomeOriginal]
+
+Renomeia o arquivo
+Usa o comando Name para alterar o nome do arquivo no sistema.
+
+Exibe mensagem final
+“Arquivos renomeados com sucesso!”
+
+✅ Para que serve
+Essa macro é útil para padronizar nomes de arquivos de notas fiscais eletrônicas (NF-e), garantindo organização e fácil identificação. Por exemplo:
+Adicionar um prefixo padrão.
+Destacar o número da NF no início do nome.
+
+✅ Benefícios
+Automação: Evita renomear manualmente dezenas ou centenas de arquivos.
+Padronização: Garante que todos os arquivos sigam o mesmo formato.
+Rapidez: Faz em segundos o que levaria muito tempo manualmente.
+
+Esse tipo de macro é muito usado em departamentos fiscais, contábeis e administrativos, onde há grande volume de documentos digitais que precisam ser organizados.
