@@ -1,4 +1,4 @@
-Sub CriarPastasAvancado()
+Sub CriarPastasDeCelulasOuPastaExistente()
     Dim opcao As Integer
     Dim pastaBase As String
     Dim dlg As FileDialog
@@ -104,3 +104,22 @@ Sub CriarPastasAvancado()
 
     MsgBox "Processo concluído!", vbInformation
 End Sub
+
+O que a macro faz
+Seleciona a pasta base
+Abre uma janela para o usuário escolher a pasta onde as novas pastas serão criadas.
+
+Pergunta ao usuário qual método usar:
+Sim → Criar pastas com base em uma lista de nomes em células.
+Não → Criar pastas com base em pastas já existentes (replicando seus nomes na pasta base).
+Cancelar → Interrompe a execução.
+
+Se a opção for “Ler Listagem de Células”:
+Solicita ao usuário um intervalo de células que contém os nomes das novas pastas.
+Para cada célula não vazia, cria uma pasta com esse nome dentro da pasta base (se não existir ainda).
+
+Se a opção for “Selecionar Pastas Existentes”:
+Permite ao usuário escolher múltiplas pastas existentes.
+Para cada pasta selecionada, cria uma nova pasta na pasta base com o mesmo nome (sem copiar conteúdo, apenas cria a estrutura).
+
+Finaliza com uma mensagem informando que o processo foi concluído.
