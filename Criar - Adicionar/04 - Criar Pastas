@@ -105,7 +105,7 @@ Sub CriarPastasDeCelulasOuPastaExistente()
     MsgBox "Processo concluído!", vbInformation
 End Sub
 
-O que a macro faz
+✅ O que a macro faz
 Seleciona a pasta base
 Abre uma janela para o usuário escolher a pasta onde as novas pastas serão criadas.
 
@@ -123,3 +123,13 @@ Permite ao usuário escolher múltiplas pastas existentes.
 Para cada pasta selecionada, cria uma nova pasta na pasta base com o mesmo nome (sem copiar conteúdo, apenas cria a estrutura).
 
 Finaliza com uma mensagem informando que o processo foi concluído.
+
+✅ Para que serve
+Essa macro é útil para organizar estruturas de diretórios rapidamente, seja:
+Criando pastas a partir de uma lista (por exemplo, nomes de clientes, projetos ou meses).
+Replicando a estrutura de nomes de pastas existentes em outro local.
+
+✅ Benefícios
+Agilidade: Evita criar pastas manualmente uma a uma.
+Flexibilidade: Permite escolher entre nomes em células ou replicar pastas existentes.
+Controle: Garante que não cria duplicatas (verifica se a pasta já existe).
