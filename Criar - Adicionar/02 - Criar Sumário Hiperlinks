@@ -118,3 +118,25 @@ Sub CriarTabelaComHiperlinks()
     ' Informa ao usuário
     MsgBox "Tabela criada com sucesso!", vbInformation
 End Sub
+
+Configuração inicial
+Define a planilha ativa como base para criar a tabela.
+Remove qualquer tabela anterior chamada “TabelaPlanilhas” para evitar duplicidade.
+
+Criação dos cabeçalhos
+Insere os títulos “Nome da Planilha” e “Link” nas colunas A e B.
+
+Geração da lista de planilhas com hiperlinks
+Percorre todas as planilhas do arquivo.
+Para cada planilha (exceto a atual), adiciona:
+O nome da planilha na coluna A.
+Um hiperlink na coluna B que leva diretamente à célula A1 dessa planilha.
+Em cada planilha listada, também cria um hiperlink chamado “Voltar à Tabela Principal”, permitindo navegação reversa para a planilha principal.
+
+Formatação da tabela
+Cria uma tabela estruturada com os nomes e links.
+Aplica estilo, bordas, alinhamento central, fonte Arial tamanho 15 e ajusta largura das colunas.
+Adiciona bordas espessas ao redor da tabela para destaque.
+
+Feedback ao usuário
+Exibe uma mensagem informando que a tabela foi criada com sucesso.
