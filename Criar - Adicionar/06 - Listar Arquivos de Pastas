@@ -58,3 +58,37 @@ Sub ListarArquivos()
     ' Ajusta a largura das colunas
     ws.Columns("A:B").AutoFit
 End Sub
+
+✅ O que a macro faz
+Solicita ao usuário a pasta
+Abre uma janela para selecionar a pasta onde os arquivos serão listados.
+
+Cria ou recria a planilha “Lista de Arquivos”
+Se já existir, exclui para evitar duplicidade.
+Cria uma nova planilha com esse nome.
+
+Define os cabeçalhos
+Coluna A: Nome do Arquivo
+Coluna B: Data de Modificação
+
+Lista todos os arquivos da pasta
+Usa a função Dir para percorrer todos os arquivos.
+Para cada arquivo encontrado:
+Insere o nome na coluna A.
+Insere a data de modificação na coluna B (usando FileDateTime).
+
+Ajusta a largura das colunas
+Para melhor visualização.
+
+✅ Para que serve
+Essa macro é útil para auditorias, organização e controle de arquivos, permitindo:
+Criar um inventário rápido dos arquivos de uma pasta.
+Verificar datas de atualização.
+Preparar relatórios sobre vencimentos ou status (como indicado nos comentários do código).
+
+✅ Benefícios
+Automação: Evita listar arquivos manualmente.
+Rapidez: Faz em segundos o que levaria muito tempo.
+Flexibilidade: Pode ser adaptada para incluir mais informações (tamanho do arquivo, caminho completo, etc.).
+
+Esse tipo de macro é muito usado em controle de documentos, gestão de prazos e compliance, pois pode ser combinado com fórmulas do Excel (como as sugeridas nos comentários) para indicar status como “Vencido”, “Atenção” ou “No Prazo”.
