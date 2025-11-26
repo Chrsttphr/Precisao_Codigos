@@ -119,6 +119,7 @@ Sub CriarTabelaComHiperlinks()
     MsgBox "Tabela criada com sucesso!", vbInformation
 End Sub
 
+✅ O que a macro faz
 Configuração inicial
 Define a planilha ativa como base para criar a tabela.
 Remove qualquer tabela anterior chamada “TabelaPlanilhas” para evitar duplicidade.
@@ -131,6 +132,7 @@ Percorre todas as planilhas do arquivo.
 Para cada planilha (exceto a atual), adiciona:
 O nome da planilha na coluna A.
 Um hiperlink na coluna B que leva diretamente à célula A1 dessa planilha.
+
 Em cada planilha listada, também cria um hiperlink chamado “Voltar à Tabela Principal”, permitindo navegação reversa para a planilha principal.
 
 Formatação da tabela
@@ -140,3 +142,11 @@ Adiciona bordas espessas ao redor da tabela para destaque.
 
 Feedback ao usuário
 Exibe uma mensagem informando que a tabela foi criada com sucesso.
+
+✅ Para que serve
+Essa macro é ideal para arquivos com muitas planilhas, pois cria um menu interativo que facilita a navegação. Em vez de procurar manualmente cada aba, o usuário pode clicar em um link na tabela para ir direto à planilha desejada e, dentro dessa planilha, usar o link de retorno para voltar ao índice principal.
+
+✅ Benefícios
+Organização: Cria um índice central para todas as planilhas.
+Agilidade: Navegação rápida sem precisar percorrer abas.
+Automação completa: Atualiza links automaticamente e aplica formatação profissional.
