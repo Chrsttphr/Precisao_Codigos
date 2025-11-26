@@ -1,4 +1,4 @@
-Sub MarcarCelulas()
+Sub MarcarLinhas()
     Dim ws As Worksheet
     Dim i As Long
     Dim LastRow As Long
