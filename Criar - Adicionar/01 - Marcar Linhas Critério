@@ -21,7 +21,26 @@ Sub MarcarLinhas()
     MsgBox "Processo concluído!"
 End Sub
 
-Macros em VBA que percorrem linhas de uma planilha para aplicar marcações baseadas em critérios são muito utilizadas para automatizar processos repetitivos no Excel. A lógica geral é simples: o código analisa cada linha dentro de um intervalo definido, verifica se uma condição específica é atendida e, caso positivo, realiza uma ação — normalmente marcar, preencher ou destacar células da mesma linha.
-Esse tipo de automação é útil em diversas situações, como validação de dados, identificação de registros incompletos, sinalização para revisão ou preparação para análises. Por exemplo, você pode criar uma macro que procura valores abaixo de um determinado limite, códigos com tamanho específico ou células vazias, e então marca essas linhas para facilitar filtros ou relatórios.
-A grande vantagem é que, ao invés de fazer essa verificação manualmente em milhares de linhas, a macro executa tudo em segundos, reduzindo erros e economizando tempo. Além disso, esse conceito pode ser adaptado para diferentes critérios e ações: desde preencher células com um texto, aplicar cores, até copiar dados para outra planilha.
-Em resumo, macros que buscam um padrão e marcam linhas que atendem ao critério são uma solução prática para quem trabalha com grandes volumes de dados e precisa garantir agilidade e precisão nos processos.
+✅ O que ele faz
+Define a planilha ativa
+A macro trabalha na planilha que está aberta no momento.
+
+Define o intervalo de análise
+Vai da linha 3 até a linha 15.614 (coluna A).
+
+Percorre cada linha
+Para cada célula na coluna A, verifica se o valor tem 9 caracteres ou menos.
+
+Marca a linha
+Se a condição for verdadeira, preenche as colunas B até M da mesma linha com “X”.
+
+Exibe mensagem final
+Ao terminar, mostra “Processo concluído!”.
+
+✅ Para que serve
+Esse tipo de macro é útil para identificar e sinalizar registros que atendem a um critério específico, como códigos curtos, dados incompletos ou padrões definidos pelo usuário. A marcação facilita filtros, análises ou revisões posteriores.
+
+✅ Benefícios
+Automação: Evita trabalho manual em milhares de linhas.
+Rapidez: Executa em segundos.
+Flexibilidade: Pode ser adaptada para outros critérios (por exemplo, valores numéricos, células vazias, etc.).
