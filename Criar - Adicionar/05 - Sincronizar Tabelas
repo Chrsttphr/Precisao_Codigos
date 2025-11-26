@@ -61,3 +61,32 @@ Sub SincronizarFiltros()
         End If
     End If
 End Sub
+
+✅O que a macro faz
+Identifica a planilha e as tabelas
+Define a planilha onde estão as tabelas (Planilha 1).
+Localiza duas tabelas chamadas Tabela 1 e Tabela 2.
+
+Verifica se tudo existe
+Se a planilha ou as tabelas não forem encontradas, exibe uma mensagem de erro e interrompe.
+
+Captura o filtro aplicado na primeira tabela
+Verifica se existe um filtro ativo na Tabela 1 e pega o critério do primeiro filtro (coluna 1).
+
+Remove filtros existentes na segunda tabela
+Limpa qualquer filtro aplicado na Tabela 2 para evitar conflitos.
+
+Aplica o mesmo filtro na segunda tabela
+Usa uma coluna comum (definida como "Coluna1", mas pode ser alterada) para aplicar o mesmo critério de filtro na Tabela 2.
+Se a coluna não existir, exibe uma mensagem de erro.
+
+✅ Para que serve
+Essa macro é útil quando você tem duas tabelas relacionadas e quer que os filtros aplicados em uma tabela sejam replicados na outra automaticamente. Por exemplo:
+Uma tabela com blocos e outra com descrições detalhadas.
+Ao filtrar um bloco na primeira tabela, a segunda tabela mostra apenas as descrições correspondentes.
+
+
+✅ Benefícios
+Agilidade: Evita aplicar filtros manualmente em várias tabelas.
+Consistência: Garante que as tabelas exibam dados relacionados.
+Automação: Reduz erros humanos em relatórios ou dashboards.
