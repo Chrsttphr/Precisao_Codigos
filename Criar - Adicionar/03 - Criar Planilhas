@@ -122,7 +122,7 @@ Function LimparNomePlanilha(nome As String) As String
     LimparNomePlanilha = nome
 End Function
 
-O que a macro faz
+✅ O que a macro faz
 Pergunta ao usuário qual método usar:
 Sim → Criar planilhas a partir de um intervalo de células.
 Não → Criar planilhas com base em arquivos ou pastas selecionados.
@@ -145,3 +145,13 @@ Remove caracteres proibidos para nomes de planilhas (/\[]:?*).
 Limita o nome a 31 caracteres (restrição do Excel).
 
 Finaliza com uma mensagem informando que as planilhas foram criadas com sucesso.
+
+✅ Para que serve
+Essa macro é útil para organizar dados de forma automatizada, criando planilhas rapidamente a partir:
+De uma lista de nomes (por exemplo, nomes de clientes, produtos, projetos).
+De arquivos ou pastas (por exemplo, criar uma aba para cada arquivo que será analisado).
+
+✅ Benefícios
+Agilidade: Evita criar planilhas manualmente uma a uma.
+Flexibilidade: Permite escolher entre nomes em células ou nomes de arquivos/pastas.
+Segurança: Garante que os nomes sejam válidos e não causem erros no Excel.
