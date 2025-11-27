@@ -1,0 +1,378 @@
+' Este módulo contém as seguintes funções personalizadas:
+' 
+' 1. DifPercentual: Calcula a diferença percentual entre dois valores.
+' 2. ContarOcorrencias: Conta ocorrências de um valor em múltiplos intervalos.
+' 3. NEsimoMaior: Encontra o N-ésimo maior valor em um intervalo.
+' 4. BubbleSort: Função auxiliar para ordenar um array (não usada diretamente).
+' 5. TextoParaNumero: Converte texto em número de forma personalizada.
+' 6. MediaPonderada: Calcula a média ponderada de um conjunto de valores.
+' 7. Mediana: Encontra a mediana de um intervalo.
+' 8. ConcatenarIntervalos: Concatena intervalos de células com um separador.
+' 9. RemoverEspacosExtras: Remove espaços extras de um texto.
+' 10. ContarPalavras: Conta o número de palavras em uma célula de texto.
+' 11. ContemTexto: Verifica se uma célula contém texto.
+' 12. UltimaOcorrencia: Encontra a última ocorrência de um valor em um intervalo.
+' 13. ValorFuturo: Calcula o valor futuro com base em juros compostos.
+' 14. SomaValoresUnicos: Soma todos os valores únicos em um intervalo.
+
+' Função para calcular a diferença percentual entre dois valores
+Function DifPercentual(valor1 As Double, valor2 As Double) As Double
+    If valor1 = 0 Then
+        DifPercentual = 0
+    Else
+        DifPercentual = (valor2 - valor1) / Abs(valor1)
+    End If
+End Function
+
+' Função para contar ocorrências em múltiplos intervalos
+Function ContarOcorrencias(rng1 As Range, rng2 As Range, valor As Variant) As Long
+    ContarOcorrencias = Application.WorksheetFunction.CountIf(rng1, valor) + Application.WorksheetFunction.CountIf(rng2, valor)
+End Function
+
+' Função para encontrar o N-ésimo maior valor
+Function NEsimoMaior(rng As Range, n As Integer) As Double
+    Dim valores() As Double
+    Dim i As Integer
+    
+    ReDim valores(1 To rng.Count)
+    i = 1
+    For Each celula In rng
+        valores(i) = celula.Value
+        i = i + 1
+    Next celula
+    
+    Call BubbleSort(valores)
+    
+    NEsimoMaior = valores(UBound(valores) - n + 1)
+End Function
+
+' Função auxiliar para ordenar o array (Bubble Sort)
+Private Sub BubbleSort(arr() As Double)
+    Dim i As Integer, j As Integer
+    Dim temp As Double
+    
+    For i = LBound(arr) To UBound(arr) - 1
+        For j = i + 1 To UBound(arr)
+            If arr(i) < arr(j) Then
+                temp = arr(i)
+                arr(i) = arr(j)
+                arr(j) = temp
+            End If
+        Next j
+    Next i
+End Sub
+
+' Função para converter texto em número de forma personalizada
+Function TextoParaNumero(texto As String, divisor As Double) As Double
+    TextoParaNumero = Val(texto) / divisor
+End Function
+
+' Função para calcular a média ponderada
+Function MediaPonderada(valores As Range, pesos As Range) As Double
+    Dim somaPonderada As Double
+    Dim somaPesos As Double
+    Dim i As Integer
+    
+    For i = 1 To valores.Count
+        somaPonderada = somaPonderada + (valores.Cells(i, 1).Value * pesos.Cells(i, 1).Value)
+        somaPesos = somaPesos + pesos.Cells(i, 1).Value
+    Next i
+    
+    If somaPesos <> 0 Then
+        MediaPonderada = somaPonderada / somaPesos
+    Else
+        MediaPonderada = 0
+    End If
+End Function
+
+' Função para encontrar a mediana de um intervalo
+Function Mediana(rng As Range) As Double
+    Dim valores() As Double
+    Dim i As Integer
+
+    ReDim valores(1 To rng.Count)
+    i = 1
+    For Each celula In rng
+        valores(i) = celula.Value
+        i = i + 1
+    Next celula
+
+    Call BubbleSort(valores)
+
+    If UBound(valores) Mod 2 = 1 Then
+        Mediana = valores((UBound(valores) + 1) \ 2)
+    Else
+        Mediana = (valores(UBound(valores) \ 2) + valores((UBound(valores) \ 2) + 1)) / 2
+    End If
+End Function
+
+' Função para concatenar intervalos de células com separador
+Function ConcatenarIntervalos(rng As Range, separador As String) As String
+    Dim celula As Range
+    Dim resultado As String
+
+    resultado = ""
+    For Each celula In rng
+        If resultado = "" Then
+            resultado = celula.Value
+        Else
+            resultado = resultado & separador & celula.Value
+        End If
+    Next celula
+
+    ConcatenarIntervalos = resultado
+End Function
+
+' Função para remover espaços extras de texto
+Function RemoverEspacosExtras(texto As String) As String
+    Dim resultado As String
+    resultado = WorksheetFunction.Trim(texto)
+    RemoverEspacosExtras = resultado
+End Function
+
+' Função para contar palavras em uma célula
+Function ContarPalavras(texto As String) As Long
+    Dim palavras() As String
+    palavras = Split(texto, " ")
+    ContarPalavras = UBound(palavras) + 1
+End Function
+
+' Função para verificar se uma célula contém texto
+Function ContemTexto(celula As Range) As Boolean
+    ContemTexto = Application.WorksheetFunction.IsText(celula.Value)
+End Function
+
+' Função para encontrar a última ocorrência de um valor em um intervalo
+Function UltimaOcorrencia(rng As Range, valor As Variant) As Variant
+    Dim i As Long
+    
+    For i = rng.Cells.Count To 1 Step -1
+        If rng.Cells(i).Value = valor Then
+            UltimaOcorrencia = rng.Cells(i).Address
+            Exit Function
+        End If
+    Next i
+    
+    UltimaOcorrencia = CVErr(xlErrValue)
+End Function
+
+' Função para calcular o valor futuro com juros compostos
+Function ValorFuturo(capital As Double, taxa As Double, periodo As Integer) As Double
+    ValorFuturo = capital * (1 + taxa) ^ periodo
+End Function
+
+' Função para calcular a soma de todos os valores únicos em um intervalo
+Function SomaValoresUnicos(rng As Range) As Double
+    Dim celula As Range
+    Dim valoresUnicos As New Collection
+    Dim total As Double
+    Dim valor As Variant
+
+    On Error Resume Next
+    For Each celula In rng
+        valoresUnicos.Add celula.Value, CStr(celula.Value)
+    Next celula
+    On Error GoTo 0
+
+    For Each valor In valoresUnicos
+        total = total + valor
+    Next valor
+
+    SomaValoresUnicos = total
+End Function
+
+✅ Visão geral do módulo
+Este módulo reúne funções personalizadas para análise e tratamento de dados em Excel/VBA, cobrindo comparação percentual, contagens, estatística (mediana, N-ésimo maior), concatenação de textos, limpeza (trim), checagem de tipo, busca de última ocorrência, cálculo financeiro e soma de valores únicos.
+
+✅ O que cada função faz
+1) DifPercentual(valor1, valor2) As Double
+O que faz:
+Calcula a diferença percentual entre valor2 e valor1, usando a base como |valor1|.
+Se valor1 = 0, retorna 0 para evitar divisão por zero.
+
+Para que serve:
+Comparar evolução entre períodos (ex.: mês atual vs. mês anterior).
+
+Benefícios:
+Simples, evita erro por divisão por zero.
+
+Observação/melhoria:
+Se quiser sinalizar quando valor1 = 0 e valor2 <> 0, pode retornar #DIV/0! ou uma nota específica.
+
+2) ContarOcorrencias(rng1, rng2, valor) As Long
+O que faz:
+Soma a contagem de valor em dois intervalos (CountIf em rng1 + rng2).
+
+Para que serve:
+Contar aparições em áreas diferentes (ex.: duas colunas ou duas planilhas).
+
+Benefícios:
+Prático, direto e usa função nativa rápida.
+
+3) NEsimoMaior(rng, n) As Double
+O que faz:
+Cria um array dos valores do intervalo, ordena em ordem decrescente com BubbleSort e retorna o N-ésimo maior.
+
+Para que serve:
+Análise de ranking (ex.: 1º maior, 2º maior…).
+
+Benefícios:
+Funciona sem depender da função de planilha.
+
+Observações/melhorias:
+Performance: BubbleSort é O(n²). Para intervalos grandes, use WorksheetFunction.Large(rng, n) ou ordenação mais eficiente (QuickSort).
+Validação: Trate n fora do limite (ex.: n > Count) para evitar erro.
+
+4) BubbleSort(arr())
+O que faz:
+Ordena o array em ordem decrescente (troca quando arr(i) < arr(j)).
+
+Para que serve:
+Suporte para NEsimoMaior e Mediana.
+
+Benefícios:
+Simples e didático.
+
+Observação:
+Para listas grandes, é melhor substituir por método mais eficiente.
+
+5) TextoParaNumero(texto, divisor) As Double
+O que faz:
+Converte texto em número com Val e divide pelo divisor.
+
+Para que serve:
+Padronizar importações onde números vêm como string (ex.: “001234”).
+
+Benefícios:
+Evita erros de conversão com símbolos.
+
+Observação/melhoria:
+Val para em caracteres não numéricos (ex.: “123A” → 123). Se isso não for desejado, valide com regex ou IsNumeric.
+
+6) MediaPonderada(valores, pesos) As Double
+O que faz:
+Calcula ∑(valor∗peso)/∑(peso)\sum (valor * peso) / \sum (peso)∑(valor∗peso)/∑(peso). Retorna 0 se soma de pesos = 0.
+
+Para que serve:
+Notas ponderadas, índices ponderados, KPIs.
+
+Benefícios:
+Robusto, evita divisão por zero.
+
+Observações:
+Valide que valores.Count = pesos.Count.
+Trate vazios e erros se necessário.
+
+7) Mediana(rng) As Double
+O que faz:
+Copia os valores para um array, ordena (decrescente) e calcula a mediana:
+Se n é ímpar → valor do meio.
+Se n é par → média dos dois do meio.
+
+Para que serve:
+Medida de tendência central menos sensível a outliers.
+
+Benefícios:
+Útil para dados assimétricos.
+
+Observação/melhoria:
+Ordenar em crescente é mais intuitivo (não muda o resultado, mas facilita conferência).
+Pode usar WorksheetFunction.Median(rng) para performance.
+
+8) ConcatenarIntervalos(rng, separador) As String
+O que faz:
+Percorre o intervalo e junta os valores, separando pelo separador.
+
+Para que serve:
+Criar listas (ex.: “ID1;ID2;ID3”), montar chaves compostas.
+
+Benefícios:
+Simples, controlado pelo separador.
+
+Observações/melhorias:
+Ignorar células vazias (se desejar).
+Tratar células com erro e trim dos textos para evitar espaços.
+
+9) RemoverEspacosExtras(texto) As String
+O que faz:
+Aplica WorksheetFunction.Trim(texto) para remover espaços extras (múltiplos espaços viram um só; espaços no início/fim são removidos).
+
+Para que serve:
+Limpeza de dados antes de comparação/joins.
+
+Benefícios:
+Padroniza entrada de textos.
+
+10) ContarPalavras(texto) As Long
+O que faz:
+Divide o texto por espaço " " e retorna a quantidade de partes.
+
+Para que serve:
+Análise básica de conteúdo textual (ex.: resumos).
+
+Observações/melhorias:
+Trate múltiplos espaços e pontuação (use Split(WorksheetFunction.Trim(texto), " ")).
+Considerar que hífens/virgulas podem afetar contagem.
+
+11) ContemTexto(celula) As Boolean
+O que faz:
+Retorna True se o conteúdo da célula é texto (IsText).
+
+Para que serve:
+Filtrar células textuais (ex.: validar campos de descrição).
+
+Benefícios:
+Simples e usa função nativa.
+
+12) UltimaOcorrencia(rng, valor)
+O que faz:
+Percorre de trás para frente e retorna o Address da última célula com valor. Se não encontrar, retorna #VALUE!.
+
+Para que serve:
+Localizar última aparição (ex.: última venda de um produto).
+
+Benefícios:
+Rápido e direto.
+
+Observações/melhorias:
+Pode retornar a célula/Range em vez de endereço, se desejar manipulação direta.
+Use Find com SearchOrder:=xlByRows, SearchDirection:=xlPrevious para performance.
+
+13) ValorFuturo(capital, taxa, periodo) As Double
+O que faz:
+Calcula juros compostos: VF=capital×(1+taxa)periodoVF = capital \times (1 + taxa)^{periodo}VF=capital×(1+taxa)periodo.
+
+Para que serve:
+Projeções financeiras, crescimento de investimentos.
+
+Benefícios:
+Confiável e simples.
+
+Observações:
+taxa deve ser decimal (ex.: 5% → 0,05).
+Pode adicionar aporte periódico se necessário.
+
+14) SomaValoresUnicos(rng) As Double
+O que faz:
+Usa uma Collection para deduplicar valores (chave = CStr(valor)) e soma apenas os únicos.
+
+Para que serve:
+Somar sem contar duplicados (ex.: valores distintos por ID).
+
+Benefícios:
+Evita repetição de soma.
+
+Observações/melhorias:
+Convertendo chave com CStr, números como 1 e texto "1" são considerados iguais. Se isso não for desejado, diferencie tipos.
+Células com erro podem causar problemas; inserir verificação.
+
+✅ Benefícios do módulo
+Cobertura ampla: Funções para estatística, texto, busca, finanças e contagens.
+Reuso: Pode ser chamado direto na planilha como UDFs.
+Praticidade: Centraliza rotinas comuns de análise que você usa no dia a dia.
+
+🛠️ Sugestões de melhorias rápidas
+Tratamento de erros nas funções que percorrem intervalos (ignorar células com erro).
+Tipagem explícita de variáveis (Dim celula As Range em funções que usam For Each celula).
+Performance: Trocar BubbleSort por WorksheetFunction.Large/Median ou QuickSort para intervalos maiores.
+Validações: Em funções como NEsimoMaior, validar n entre 1 e rng.Count.
