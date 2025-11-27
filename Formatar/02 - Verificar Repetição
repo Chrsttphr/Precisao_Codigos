@@ -1,5 +1,5 @@
 Sub AplicarFormatacaoCondicional()
-
+    ' Verifica a Repetição sendo <4; entre 5 a 8; >9
     Dim ws As Worksheet
     Dim rng As Range
     Dim cell As Range
@@ -36,3 +36,39 @@ Sub AplicarFormatacaoCondicional()
         End If
     Next cell
 End Sub
+
+✅ O que a macro faz
+Define a planilha e intervalo de análise
+Seleciona a aba "Controle" e define o intervalo da coluna G3:G15000 para verificar repetições.
+
+Identifica a última linha preenchida
+Calcula a última linha com dados na coluna G para limitar a análise.
+
+Limpa formatações anteriores
+Remove qualquer regra de formatação condicional existente no intervalo A3:Y2001 para evitar sobreposição.
+
+Percorre cada célula da coluna G
+Para cada valor encontrado:
+
+Conta quantas vezes ele aparece no intervalo definido.
+Seleciona toda a linha correspondente (colunas A até Y).
+
+Aplica cores conforme a quantidade de repetições
+
+≤ 4 repetições: Vermelho claro (RGB 255,182,193).
+Entre 5 e 8 repetições: Amarelo (RGB 255,255,0).
+≥ 9 repetições: Verde claro (RGB 144,238,144).
+
+Resultado final
+Cada linha é colorida de acordo com a frequência do valor na coluna G.
+
+✅ Para que serve
+Essa macro é útil para destacar visualmente a frequência de valores em uma planilha, permitindo identificar rapidamente:
+
+Valores raros (poucas repetições).
+Valores comuns (muitas repetições).
+
+✅ Benefícios
+Automação: Evita criar regras de formatação manualmente.
+Clareza visual: Facilita análise de padrões e duplicidades.
+Rapidez: Processa milhares de linhas em segundos.
