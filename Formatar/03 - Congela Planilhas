@@ -1,0 +1,39 @@
+Sub CongelarColunaA()
+    Dim ws As Worksheet
+    
+    ' Percorre todas as planilhas no livro
+    For Each ws In ThisWorkbook.Worksheets
+        With ws
+            ' Congela a coluna A
+            .Activate
+            ActiveWindow.FreezePanes = False
+            .Range("B1").Select
+            ActiveWindow.FreezePanes = True
+        End With
+    Next ws
+    
+    MsgBox "Coluna A congelada em todas as planilhas."
+End Sub
+
+✅ O que a macro faz
+Percorre todas as planilhas do arquivo
+Usa um loop For Each ws In ThisWorkbook.Worksheets para acessar cada aba do Excel.
+
+Remove qualquer congelamento existente
+Antes de aplicar o novo congelamento, executa ActiveWindow.FreezePanes = False para garantir que não haja panes ativos.
+
+Define a posição para congelar a coluna A
+Seleciona a célula B1 e aplica ActiveWindow.FreezePanes = True.
+Isso congela tudo à esquerda da célula selecionada, ou seja, a coluna A.
+
+Exibe mensagem final
+Mostra um aviso:
+"Coluna A congelada em todas as planilhas."
+
+✅ Para que serve
+Essa macro é útil para padronizar a visualização em todas as abas do arquivo, garantindo que a primeira coluna (geralmente usada para identificadores) fique sempre visível ao rolar horizontalmente.
+
+✅ Benefícios
+Automação: Evita fazer isso manualmente em cada aba.
+Consistência: Todas as planilhas ficam com a mesma configuração.
+Rapidez: Faz em segundos o que levaria muito tempo manualmente.
