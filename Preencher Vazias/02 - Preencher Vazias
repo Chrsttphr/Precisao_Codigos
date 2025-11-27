@@ -1,0 +1,71 @@
+Sub PreencherCelulasVaziasColunaE()
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+    Dim lastRow As Long
+    Dim preenchido As Boolean
+    
+    ' Definir a planilha ativa
+    Set ws = ActiveSheet
+    
+    ' Definir o intervalo a ser verificado
+    lastRow = 3000 ' Última linha do intervalo
+    Set rng = ws.Range("E3:E" & lastRow)
+    
+    Do
+        preenchido = False
+        
+        ' Verificar células vazias no intervalo E3:E3000
+        For Each cell In rng
+            If cell.Value = "" And cell.Offset(1, 0).Value <> "" Then
+                cell.Value = cell.Offset(1, 0).Value
+                preenchido = True
+            End If
+        Next cell
+        
+        ' Atualizar o intervalo para considerar mudanças feitas
+        Set rng = ws.Range("E3:E" & lastRow)
+        
+    Loop While preenchido
+    
+    MsgBox "Todas as células vazias no intervalo E3:E3000 foram preenchidas!"
+End Sub
+
+
+✅ O que a macro faz
+Define a planilha e intervalo
+Seleciona a planilha ativa e define o intervalo E3:E3000 como área de verificação.
+
+Percorre as células vazias e preenche com valor da célula abaixo
+
+Para cada célula no intervalo:
+
+Se estiver vazia e a célula logo abaixo tiver valor:
+
+Copia o valor da célula abaixo para a célula vazia.
+
+Usa um loop Do...Loop While preenchido para repetir o processo até não haver mais células que possam ser preenchidas (garante que valores “subam” até o topo).
+
+Atualiza o intervalo a cada ciclo
+Reatribui rng para considerar as mudanças feitas no preenchimento.
+
+Exibe mensagem final
+Mostra:
+"Todas as células vazias no intervalo E3:E3000 foram preenchidas!"
+
+✅ Para que serve
+Preencher células vazias em uma coluna com o valor da célula imediatamente abaixo, útil para:
+
+Consolidar dados.
+Evitar lacunas em relatórios.
+Preparar informações para filtros ou análises.
+
+✅ Benefícios
+Automação: Evita preencher manualmente centenas de células.
+Consistência: Garante que não haja espaços vazios.
+Rapidez: Faz em segundos o que levaria muito tempo manualmente.
+
+⚠️ Pontos de atenção
+Funciona apenas na coluna E e no intervalo E3:E3000 (fixo).
+Se houver células vazias no final do intervalo, elas não serão preenchidas (não há valor abaixo).
+Pode ser lento para intervalos muito grandes, pois percorre várias vezes até completar.
