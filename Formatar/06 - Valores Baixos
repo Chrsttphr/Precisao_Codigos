@@ -1,0 +1,63 @@
+Sub VerificarValores()
+    Dim ws As Worksheet
+    Dim rng As Range
+    Dim cell As Range
+    Dim colDescricao As String
+    Dim colValor As String
+    
+    ' Configura a planilha ativa
+    Set ws = ActiveSheet
+    
+    ' Solicita a coluna da descrição e da coluna valor ao usuário
+    colDescricao = InputBox("Digite a letra da coluna para a Descrição (por exemplo, B):")
+    colValor = InputBox("Digite a letra da coluna para o Valor (por exemplo, A):")
+    
+    ' Define o intervalo das células da coluna Valor
+    Set rng = ws.Range(colValor & "2:" & colValor & ws.Cells(ws.Rows.Count, colValor).End(xlUp).Row)
+    
+    For Each cell In rng
+        If IsNumeric(cell.Value) And cell.Value < 20 Then
+            cell.Offset(0, ws.Range(colDescricao & "1").Column - ws.Range(colValor & "1").Column).Value = "Valor Baixo"
+        Else
+            cell.Offset(0, ws.Range(colDescricao & "1").Column - ws.Range(colValor & "1").Column).ClearContents
+        End If
+    Next cell
+End Sub
+
+✅ O que a macro faz
+Solicita ao usuário as colunas de referência
+
+Exibe duas caixas de entrada para que o usuário informe:
+A coluna da Descrição (ex.: B).
+A coluna do Valor (ex.: A).
+
+Define o intervalo de análise
+Cria um Range com todas as células da coluna de Valor (a partir da linha 2 até a última linha preenchida).
+
+Percorre cada célula do intervalo
+
+Para cada célula:
+Se o valor for numérico e menor que 20, escreve "Valor Baixo" na coluna de Descrição correspondente.
+Caso contrário, limpa o conteúdo da célula na coluna de Descrição.
+
+Cálculo do deslocamento
+
+Usa Offset para calcular a diferença entre as colunas:
+Plain Textvba não tem suporte total. O realce de sintaxe é baseado em Plain Text.ws.Range(colDescricao & "1").Column - ws.Range(colValor & "1").ColumnMostrar mais linhas
+Isso garante que a mensagem seja escrita na coluna correta, independentemente da posição das colunas.
+
+Resultado final
+As linhas com valores menores que 20 ficam marcadas com "Valor Baixo" na coluna de Descrição.
+
+✅ Para que serve
+Essa macro é útil para classificar valores baixos em uma planilha, adicionando uma indicação textual ao lado da descrição.
+
+✅ Benefícios
+Automação: Evita verificar manualmente cada valor.
+Flexibilidade: Permite escolher as colunas dinamicamente.
+Rapidez: Analisa centenas de linhas em segundos.
+
+⚠️ Pontos de atenção
+Só funciona se as colunas informadas existirem e tiverem dados.
+Não trata células com erro ou texto na coluna de Valor.
+Limpa qualquer conteúdo anterior na coluna de Descrição quando o valor não atende ao critério.
