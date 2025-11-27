@@ -1,0 +1,111 @@
+Sub Format5Digits_ToText_NoCellLoop()
+    Dim rng As Range
+    Dim rngConstants As Range
+    Dim area As Range
+    Dim fmla As String
+
+    ' Seleciona o intervalo diretamente
+    On Error Resume Next
+    Set rng = Application.InputBox( _
+        Prompt:="Selecione o intervalo que deseja converter para texto com 5 dígitos:", _
+        Type:=8)
+    On Error GoTo 0
+
+    If rng Is Nothing Then
+        MsgBox "Nenhum intervalo selecionado.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Considera apenas células sem fórmula (constantes)
+    On Error Resume Next
+    Set rngConstants = rng.SpecialCells(xlCellTypeConstants)
+    On Error GoTo 0
+
+    If rngConstants Is Nothing Then
+        MsgBox "O intervalo selecionado não contém células constantes (sem fórmulas).", vbInformation
+        Exit Sub
+    End If
+
+    Application.ScreenUpdating = False
+    Application.EnableEvents = False
+    Application.Calculation = xlCalculationManual
+
+    ' Garante que o resultado seja texto
+    rngConstants.NumberFormat = "@"
+
+    ' Monta expressão TEXT via Evaluate e aplica por Área (não é célula a célula)
+    For Each area In rngConstants.Areas
+        ' Constrói fórmula matricial: TEXT(valor,"00000") preservando células vazias
+        fmla = "IF(" & area.Address(0, 0) & "="""","""",TEXT(" & area.Address(0, 0) & ",""00000""))"
+        area.Value = Evaluate(fmla)
+    Next area
+
+    Application.ScreenUpdating = True
+    Application.EnableEvents = True
+    Application.Calculation = xlCalculationAutomatic
+
+    MsgBox "Conversão para texto com 5 dígitos concluída nas células constantes.", vbInformation
+End Sub
+
+✅ O que a macro faz
+Permite selecionar o intervalo na planilha
+Abre um InputBox de seleção para você escolher, com o mouse, o intervalo a ser convertido para texto com 5 dígitos.
+
+Considera apenas células sem fórmulas
+Usa SpecialCells(xlCellTypeConstants) para filtrar o intervalo e ignorar células com fórmulas, evitando alterar resultados calculados.
+
+Melhora a performance durante a execução
+Desativa atualização de tela, eventos e coloca a recalcular em modo manual para acelerar o processamento.
+
+Garante que a saída seja texto
+Aplica NumberFormat = "@" no intervalo de constantes para que os valores fiquem armazenados como texto (essencial para códigos/IDs).
+
+Converte em blocos, sem percorrer célula a célula
+Divide o intervalo em áreas contíguas (rngConstants.Areas).
+Para cada área, constrói uma expressão com Evaluate que aplica:
+
+TEXT(valor,"00000") → Formata com 5 dígitos e zeros à esquerda.
+IF(célula="","",...) → Preserva células vazias.
+
+Essa técnica preenche toda a área de uma vez, sem usar For Each cell, o que é mais rápido.
+
+Restaura as configurações
+Reativa a atualização de tela, eventos e recalculação automática.
+
+Exibe mensagem final
+Mostra: "Conversão para texto com 5 dígitos concluída nas células constantes."
+
+✅ Para que serve
+Padronizar códigos/IDs como texto com exatamente 5 caracteres, preenchendo com zeros à esquerda quando necessário.
+Exemplos:
+
+7 → "00007"
+123 → "00123"
+
+Ideal quando o dado não deve ser tratado como número (para evitar perda de zeros à esquerda ou alterações por cálculo).
+
+✅ Benefícios
+Sem loop por célula: A operação é vetorizada via Evaluate, ganhando desempenho.
+Protege fórmulas: Não altera células que possuem fórmulas.
+Padronização garantida: Todos os valores terminam como texto com 5 dígitos.
+Preserva vazios: Células em branco continuam vazias.
+
+⚠️ Pontos de atenção
+Somente constantes: Se o intervalo selecionado tiver apenas fórmulas, a macro não executa (exibe aviso).
+Valores não numéricos: TEXT funciona com números; se houver textos como ABC, permanecerão em branco pela lógica aplicada (por causa do IF).
+Se quiser que textos numéricos ("123") também virem "00123", está coberto; mas textos alfanuméricos permanecerão vazios.
+Mais de 5 dígitos: Números com mais de 5 dígitos não são truncados pelo TEXT; serão mostrados completos (ex.: 123456 → "123456"). Se você quiser truncar ou validar comprimento, posso incluir uma regra.
+
+🛠️ Trecho-chave explicando a conversão sem célula a célula
+Plain Textvba não tem suporte total. O realce de sintaxe é baseado em
+
+For Each area In rngConstants.Areas    
+' Fórmula matricial aplicada à área inteira:    
+' Se célula estiver vazia -> mantém vazia    
+' Caso contrário -> aplica TEXT(..., "00000")    
+fmla = "IF(" & area.Address(0, 0) & "="""","""",TEXT(" & area.Address(0, 0) & ",""00000""))"    
+area.Value = Evaluate(fmla)
+Next area
+
+area.Address(0, 0) retorna o endereço relativo da área (ex.: B2:B100).
+Evaluate(fmla) cria uma matriz com o resultado para toda a área e atribui de uma vez.
