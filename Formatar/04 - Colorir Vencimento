@@ -63,3 +63,47 @@ Sub AnalisarDatas()
 Erro:
     MsgBox "Ocorreu um erro: " & Err.Description, vbCritical
 End Sub
+
+✅ O que a macro faz
+Solicita ao usuário a coluna de datas
+Exibe uma caixa de entrada para que o usuário informe a letra da coluna onde estão as datas (ex.: A).
+
+Identifica a última linha preenchida
+Verifica até onde existem dados na coluna informada para definir o intervalo a ser analisado.
+
+Valida se há dados suficientes
+Se não houver pelo menos uma linha com dados, encerra a execução com uma mensagem.
+
+Define o intervalo de análise
+Cria um objeto Range com todas as células da coluna (a partir da linha 2 até a última linha).
+
+Obtém a data atual
+Armazena a data do sistema na variável hoje.
+
+Remove formatações anteriores
+Limpa cores de fundo e cores de fonte do intervalo antes de aplicar novas formatações.
+
+Percorre cada célula do intervalo
+Para cada célula que contém uma data válida:
+
+Se a data for menor que hoje:
+Marca como vencida → Fundo vermelho, texto branco.
+Se a data estiver entre amanhã e 7 dias à frente:
+Marca como prestes a vencer → Fundo amarelo, texto preto.
+Se a data for hoje ou maior:
+Marca como no prazo → Fundo verde, texto preto.
+
+Exibe mensagem final
+Mostra: "Análise de datas concluída!"
+
+✅ Para que serve
+Essa macro é útil para destacar visualmente prazos em uma planilha, permitindo identificar rapidamente:
+
+Datas vencidas.
+Datas próximas do vencimento.
+Datas ainda dentro do prazo.
+
+✅ Benefícios
+Automação: Evita verificar manualmente cada data.
+Clareza visual: Facilita a gestão de prazos.
+Rapidez: Analisa centenas de linhas em segundos.
