@@ -1,0 +1,99 @@
+Sub ApplyAllOptimizations()
+    ' Desativa a atualização de tela, alertas e cálculos automáticos
+    Application.ScreenUpdating = False
+    Application.DisplayAlerts = False
+    Application.Calculation = xlCalculationManual
+
+    ' Chama as sub-rotinas de otimização
+    RemoveEmptyRowsAndColumns
+    RemoveNamedRanges
+
+    ' Reativa o cálculo automático, alertas e a atualização de tela
+    Application.Calculation = xlCalculationAutomatic
+    Application.DisplayAlerts = True
+    Application.ScreenUpdating = True
+End Sub
+
+Sub RemoveEmptyRowsAndColumns()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim lastCol As Long
+    
+    For Each ws In ThisWorkbook.Worksheets
+        ' Encontrar a última linha com dados
+        lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+        ' Encontrar a última coluna com dados
+        lastCol = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
+        
+        ' Apagar linhas vazias abaixo dos dados
+        If ws.Cells(lastRow + 1, 1).Row <= ws.Rows.Count Then
+            ws.Rows(lastRow + 1 & ":" & ws.Rows.Count).Delete
+        End If
+        
+        ' Apagar colunas vazias à direita dos dados
+        If ws.Cells(1, lastCol + 1).Column <= ws.Columns.Count Then
+            ws.Columns(lastCol + 1 & ":" & ws.Columns.Count).Delete
+        End If
+    Next ws
+End Sub
+
+Sub RemoveNamedRanges()
+    Dim nm As Name
+    
+    On Error Resume Next
+    For Each nm In ThisWorkbook.Names
+        nm.Delete
+    Next nm
+    On Error GoTo 0
+End Sub
+
+✅ O que a macro faz
+Desativa recursos para otimização
+
+A sub ApplyAllOptimizations desliga:
+Atualização de tela (ScreenUpdating = False)
+Alertas (DisplayAlerts = False)
+Cálculo automático (Calculation = xlCalculationManual)
+Isso acelera a execução das rotinas.
+
+Executa duas rotinas principais
+
+RemoveEmptyRowsAndColumns
+
+Percorre todas as planilhas do arquivo.
+Identifica a última linha e coluna com dados.
+
+Apaga:
+Linhas vazias abaixo da última linha preenchida.
+Colunas vazias à direita da última coluna preenchida.
+
+RemoveNamedRanges
+
+Remove todos os intervalos nomeados do arquivo.
+Usa On Error Resume Next para evitar erros caso não existam nomes.
+
+Restaura configurações originais
+
+Reativa:
+Cálculo automático (xlCalculationAutomatic)
+Alertas (DisplayAlerts = True)
+Atualização de tela (ScreenUpdating = True)
+
+Resultado final
+O arquivo fica limpo e otimizado, sem linhas/colunas extras e sem nomes definidos desnecessários.
+
+✅ Para que serve
+Essa macro é útil para reduzir peso e melhorar desempenho de arquivos Excel, especialmente quando:
+
+Há muitas linhas/colunas vazias.
+Existem intervalos nomeados não utilizados.
+
+✅ Benefícios
+Automação: Faz limpeza completa em todas as planilhas com um clique.
+Performance: Remove excesso de células e nomes que podem deixar o arquivo lento.
+Padronização: Garante que o arquivo fique mais leve e organizado.
+
+⚠️ Pontos de atenção
+Remove todos os nomes definidos: Se houver nomes importantes (ex.: usados em fórmulas), eles serão apagados.
+Não verifica células ocultas: Linhas/colunas ocultas mas com dados não são removidas.
+Não compacta formatação: Apenas remove células vazias e nomes.
