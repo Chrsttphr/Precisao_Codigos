@@ -55,3 +55,51 @@ Sub DistribuirArquivoNasSubpastas()
     MsgBox "Arquivo copiado com sucesso para o primeiro e segundo níveis de subpastas!"
 
 End Sub
+
+✅ O que a macro faz
+Define caminhos principais
+
+pastaPrincipal: Caminho da pasta onde estão as subpastas.
+arquivoCaminho: Caminho completo do arquivo que será distribuído.
+
+Verifica se o arquivo existe na pasta principal
+Se o arquivo não for encontrado, exibe mensagem e encerra a execução.
+
+Cria objeto FileSystemObject (FSO)
+Permite manipular arquivos e pastas via VBA.
+
+Verifica se a pasta principal existe
+Se não existir, exibe mensagem e encerra.
+
+Percorre todas as subpastas do primeiro nível
+
+Para cada subpasta:
+Verifica se o arquivo já existe.
+Se não existir, copia o arquivo para essa subpasta.
+
+Percorre todas as subpastas do segundo nível
+Para cada subpasta dentro da subpasta do primeiro nível:
+
+Verifica se o arquivo já existe.
+Se não existir, copia o arquivo para essa subpasta.
+
+Limpa objetos da memória
+Define as variáveis como Nothing para liberar recursos.
+
+Exibe mensagem final
+Mostra:
+"Arquivo copiado com sucesso para o primeiro e segundo níveis de subpastas!"
+
+✅ Para que serve
+Distribuir automaticamente um arquivo específico para todas as subpastas de uma pasta principal, incluindo primeiro e segundo níveis.
+
+✅ Benefícios
+Automação: Evita copiar manualmente para dezenas ou centenas de subpastas.
+Controle: Não sobrescreve arquivos existentes (verifica antes).
+Rapidez: Faz em segundos o que levaria muito tempo manualmente.
+
+⚠️ Pontos de atenção
+O nome do arquivo a ser copiado está fixo como "R.A - Antecipação ICMS.xlsx" na verificação.
+Se quiser copiar qualquer arquivo informado, é preciso ajustar essa parte.
+Funciona apenas para dois níveis de subpastas (não percorre níveis mais profundos).
+Não trata pastas protegidas ou com permissões restritas.
