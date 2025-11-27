@@ -42,3 +42,51 @@ Sub DistribuirArquivos()
 
     MsgBox "Distribuição concluída.", vbInformation
 End Sub
+
+✅ O que a macro faz
+Define as pastas principais
+Configura quatro caminhos:
+
+pastaMestre: Onde estão os arquivos originais.
+pastaNF: Destino para arquivos com prefixo NF.
+pastaBoleto: Destino para arquivos com prefixo BOLETO.
+pastaOutro: Destino para arquivos que não se enquadram nos dois casos anteriores.
+
+Cria objeto FileSystemObject (FSO)
+Permite manipular arquivos e pastas via VBA.
+
+Verifica se a pasta mestre existe
+Se não existir, exibe mensagem e encerra a execução.
+
+Verifica e cria pastas de destino
+Se alguma das pastas de destino não existir, a macro cria automaticamente.
+
+Percorre todos os arquivos da pasta mestre
+Para cada arquivo:
+
+Obtém o nome do arquivo (arquivoNome).
+Verifica o prefixo:
+
+Se começar com "NF" → Move para pastaNF.
+Se começar com "BOLETO " (com espaço) → Move para pastaBoleto.
+Caso contrário → Move para pastaOutro.
+
+Exibe mensagem final
+Mostra:
+"Distribuição concluída."
+
+✅ Para que serve
+Organizar automaticamente arquivos em subpastas com base no prefixo do nome, garantindo separação por tipo (NF, BOLETO, outros).
+
+✅ Benefícios
+Automação: Evita mover manualmente dezenas ou centenas de arquivos.
+Organização: Mantém arquivos classificados por categoria.
+Rapidez: Faz em segundos o que levaria muito tempo manualmente.
+
+⚠️ Pontos de atenção
+Prefixos são verificados com UCase (maiúsculas), mas dependem de posição fixa:
+NF → primeiros 2 caracteres.
+BOLETO → primeiros 7 caracteres (inclui espaço).
+
+Se houver variação no nome (ex.: “BOLETO123” sem espaço), não será reconhecido.
+Move os arquivos (não copia). Se quiser copiar, troque MoveFile por CopyFile.
