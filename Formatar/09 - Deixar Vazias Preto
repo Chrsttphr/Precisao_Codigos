@@ -1,0 +1,30 @@
+✅ O que você está configurando
+Você está criando uma regra de formatação condicional no Excel para destacar células cujo valor seja igual a zero e aplicar uma formatação personalizada para exibir um traço (“-”) no lugar do zero.
+
+✅ Passo a passo explicado
+Fórmula na formatação condicional:
+=A1=0
+
+Essa fórmula verifica se a célula é igual a zero.
+A1 deve ser a célula superior esquerda do intervalo selecionado, pois a regra será aplicada de forma relativa.
+
+Configuração da fonte:
+
+Escolher uma cor (por exemplo, preto) para manter a legibilidade.
+
+Formatação personalizada no número:
+0;-0;"-";@
+
+Primeira parte (0): Formato para números positivos.
+Segunda parte (-0): Formato para números negativos.
+Terceira parte ("-"): Exibe um traço quando o valor é zero.
+Quarta parte (@): Mantém o texto original para células com texto.
+
+✅ Para que serve
+Substitui zeros por um traço, deixando a planilha mais limpa e visualmente agradável.
+Útil em relatórios financeiros ou tabelas onde zeros não precisam aparecer.
+
+✅ Benefícios
+Clareza visual: Evita poluição com muitos zeros.
+Padronização: Mantém um formato consistente para todos os dados.
+Automação: A regra se aplica automaticamente a novos dados no intervalo.

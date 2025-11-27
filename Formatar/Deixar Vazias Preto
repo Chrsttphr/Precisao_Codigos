@@ -1,8 +1,0 @@
-No campo "Formatar valores onde esta fórmula for verdadeira", insira a fórmula abaixo:
-=A1=0
-Certifique-se de que A1 seja a célula superior esquerda do intervalo selecionado.
-Clique no botão "Formatar...".
-Vá para a guia "Fonte" e escolha uma cor para o texto (por exemplo, preto).
-Na guia "Número", escolha "Personalizado".
-No campo "Tipo", insira a seguinte formatação personalizada:
-0;-0;"-";@
