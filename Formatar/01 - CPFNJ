@@ -94,3 +94,53 @@ Sub AplicarCPFNJ()
     
     MsgBox "Fórmula CPFNJ aplicada com sucesso!", vbInformation
 End Sub
+
+✅ O que a macro faz
+Solicita ao usuário um intervalo
+Abre uma caixa de diálogo para que o usuário selecione as células onde deseja aplicar a formatação.
+
+Percorre cada célula do intervalo
+Para cada célula selecionada, chama a função CPFNJ para processar o valor.
+
+Função CPFNJ – Etapas internas:
+
+Converte o valor para texto
+Garante que o conteúdo da célula seja tratado como string.
+
+Verifica se já está formatado
+Usa expressões regulares para checar se o valor já está no padrão:
+
+CPF: 000.000.000-00
+CNPJ: 00.000.000/0000-00
+
+Remove caracteres não numéricos
+Elimina pontos, traços, barras, espaços e vírgulas.
+
+Completa com zeros à esquerda
+
+Se tiver até 11 dígitos → completa para 11 (CPF).
+Se tiver até 14 dígitos → completa para 14 (CNPJ).
+Caso contrário → retorna “Inválido”.
+
+Formata o número
+
+11 dígitos → aplica máscara de CPF.
+14 dígitos → aplica máscara de CNPJ.
+
+Retorna o valor formatado
+Substitui o conteúdo original da célula pelo valor formatado.
+
+Exibe mensagem final
+Mostra um aviso: “Fórmula CPFNJ aplicada com sucesso!”.
+
+✅ Para que serve
+Essa macro é útil para padronizar CPFs e CNPJs em planilhas, garantindo que todos sigam o formato oficial brasileiro.
+Por exemplo:
+
+Corrigir valores digitados sem máscara.
+Uniformizar dados para relatórios ou integrações.
+
+✅ Benefícios
+Automação: Evita formatar manualmente dezenas ou centenas de registros.
+Padronização: Garante consistência nos dados.
+Rapidez: Faz em segundos o que levaria muito tempo manualmente.
