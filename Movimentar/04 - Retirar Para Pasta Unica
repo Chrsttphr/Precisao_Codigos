@@ -54,3 +54,48 @@ Sub MoverArquivosParaPastaPrincipal()
     Set fso = Nothing
     Set dialog = Nothing
 End Sub
+
+✅ O que a macro faz
+Permite escolher a pasta principal
+Abre uma caixa de diálogo (FileDialog) para que o usuário selecione a pasta onde os arquivos serão centralizados.
+
+Inicializa o FileSystemObject (FSO)
+Cria um objeto para manipular arquivos e pastas via VBA.
+
+Verifica se a pasta principal existe
+Se não existir, exibe mensagem e encerra a execução.
+
+Percorre todas as subpastas da pasta principal
+Para cada subpasta:
+
+Obtém o caminho completo (subPastaPath).
+Lista todos os arquivos PDF dentro dela usando Dir.
+
+Move arquivos PDF para a pasta principal
+
+Para cada arquivo encontrado:
+Verifica se já existe na pasta principal.
+
+Se não existir → Move o arquivo.
+Se existir → Exibe mensagem informando que não será movido (evita sobrescrever).
+
+Exibe mensagem final
+Mostra:
+"Arquivos PDF movidos para a pasta principal."
+
+Libera objetos da memória
+Define fso e dialog como Nothing.
+
+✅ Para que serve
+Centralizar todos os arquivos PDF que estão espalhados em subpastas dentro de uma pasta principal, mantendo a estrutura limpa.
+
+✅ Benefícios
+Automação: Evita mover manualmente arquivos de várias subpastas.
+Segurança: Não sobrescreve arquivos existentes.
+Rapidez: Faz em segundos o que levaria muito tempo manualmente.
+
+⚠️ Pontos de atenção
+Move apenas arquivos PDF.
+Não remove subpastas, apenas os arquivos.
+Se houver arquivos com o mesmo nome, eles não serão movidos (exibe aviso).
+Não trata permissões (pastas protegidas podem gerar erro).
