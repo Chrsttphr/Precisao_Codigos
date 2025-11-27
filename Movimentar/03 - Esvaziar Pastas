@@ -38,3 +38,40 @@ Sub LimparSubpastas()
     MsgBox "Arquivos removidos com sucesso!"
 
 End Sub
+
+
+✅ O que a macro faz
+Define a pasta principal
+Configura o caminho onde estão as subpastas que serão limpas.
+
+Cria objeto FileSystemObject (FSO)
+Permite manipular arquivos e pastas via VBA.
+
+Verifica se a pasta principal existe
+Se não existir, exibe mensagem e encerra a execução.
+
+Percorre todas as subpastas da pasta principal
+
+Para cada subpasta:
+Percorre todos os arquivos dentro dela.
+Remove cada arquivo usando arquivo.Delete.
+
+Limpa objetos da memória
+Define as variáveis como Nothing para liberar recursos.
+
+Exibe mensagem final
+Mostra:
+"Arquivos removidos com sucesso!"
+
+✅ Para que serve
+Remover todos os arquivos das subpastas de uma pasta principal, mantendo apenas a estrutura das pastas.
+
+✅ Benefícios
+Automação: Evita apagar arquivos manualmente em várias subpastas.
+Rapidez: Faz em segundos o que levaria muito tempo manualmente.
+Organização: Mantém a estrutura das pastas intacta.
+
+⚠️ Pontos de atenção
+Remove todos os arquivos sem perguntar. Não há confirmação nem backup.
+Não remove subpastas, apenas os arquivos dentro delas.
+Não trata permissões (pastas protegidas podem gerar erro).
