@@ -1,9 +1,0 @@
-from sympy import primerange
-
-def nth_prime(n):
-    # Cria uma lista de primos até um número suficientemente grande
-    primes = list(primerange(1, 20000000))
-    return primes[n - 1]
-
-# Exemplo: Encontrar o 192.834º primo
-print(nth_prime(192834))

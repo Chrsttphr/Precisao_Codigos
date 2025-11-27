@@ -1,0 +1,103 @@
+
+Option Explicit
+
+' Função para calcular o n-ésimo número primo
+Public Function NEsimoPrimo(n As Long) As Long
+    Dim upper As Long, i As Long, j As Long, count As Long
+    Dim isComposite() As Boolean
+    
+    If n < 1 Then
+        NEsimoPrimo = CVErr(xlErrValue)
+        Exit Function
+    End If
+    
+    ' Estimativa do limite superior usando logaritmo natural
+    upper = n * (Log(n) + Log(Log(n))) + 50
+    ReDim isComposite(0 To upper)
+    
+    ' Crivo de Eratóstenes
+    For i = 2 To Sqr(upper)
+        If Not isComposite(i) Then
+            For j = i * i To upper Step i
+                isComposite(j) = True
+            Next j
+        End If
+    Next i
+    
+    ' Conta os primos até achar o n-ésimo
+    count = 0
+    For i = 2 To upper
+        If Not isComposite(i) Then
+            count = count + 1
+            If count = n Then
+                NEsimoPrimo = i
+                Exit Function
+            End If
+        End If
+    Next i
+End Function
+
+=NEsimoPrimo(10)   ' Retorna 29
+=NEsimoPrimo(192834) ' Retorna o 192.834º primo
+
+✅ O que a função faz
+Valida a entrada
+Se n < 1, retorna erro de planilha (#VALUE!) para indicar parâmetro inválido.
+
+Estima um limite superior para busca
+Calcula upper = n * (Log(n) + Log(Log(n))) + 50, uma aproximação do valor do n‑ésimo primo usando logaritmos naturais (PNT – Teorema dos Números Primos).
+Essa estimativa define até onde o algoritmo precisa verificar.
+
+Inicializa a estrutura de marcação
+Cria um array booleano isComposite(0 To upper) onde:
+
+False = potencial primo
+True = composto (não primo)
+
+Executa o Crivo de Eratóstenes
+Percorre de i = 2 até Sqr(upper) e, para cada i não marcado como composto:
+
+Marca todos os múltiplos j = i * i, i * i + i, ... como compostos.
+Isso elimina rapidamente números não primos.
+
+Conta e retorna o n‑ésimo primo
+Varre de 2 até upper:
+
+Cada número não composto (Not isComposite(i)) é primo → incrementa count.
+Quando count = n, retorna i, que é o n‑ésimo número primo.
+
+✅ Para que serve
+Obter o n‑ésimo número primo diretamente em fórmulas do Excel, por exemplo:
+Excel=NEsimoPrimo(1)    ' 2=NEsimoPrimo(10)   ' 29=NEsimoPrimo(100)  ' 541Mostrar mais linhas
+Útil para estudos, validações, geração de chaves pseudo‑aleatórias baseadas em primos, e problemas matemáticos.
+
+✅ Benefícios
+Rápido e eficiente: Usa o Crivo de Eratóstenes, ideal para grandes intervalos.
+Autossuficiente: Não depende de bibliotecas externas; só VBA/Excel.
+Escalável: A estimativa de limite evita varrer números desnecessários.
+
+⚠️ Pontos de atenção
+Memória: Para n muito grande, o array isComposite(0 To upper) pode ocupar bastante memória (pois cresce com upper).
+Estimativa: A fórmula de upper é uma aproximação com margem (+50). Em raros casos extremos, pode ser necessário aumentar a margem se não encontrar o n‑ésimo primo.
+Tipo de entrada: n deve ser inteiro positivo. Valores fracionários ou texto resultarão em erro.
+
+🛠️ Trecho‑chave (Crivo e contagem)
+' Crivo de Eratóstenes
+    For i = 2 To Sqr(upper)    
+        If Not isComposite(i) Then        
+            For j = i * i To upper Step i            
+                isComposite(j) = True        
+            Next j    
+        End If
+    Next i
+' Conta os primos até achar o n-ésimo
+count = 0
+    For i = 2 To upper    
+        If Not isComposite(i) Then        
+            count = count + 1        
+            If count = n Then            
+                NEsimoPrimo = i            
+                Exit Function        
+            End If    
+        End If
+    Next i
