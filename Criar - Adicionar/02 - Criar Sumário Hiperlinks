@@ -29,22 +29,21 @@ Sub CriarTabelaComHiperlinks()
     
     ' === Só alterar colunas A e B do Sumário ===
     With wsSumario
-        .Columns("A:B").Clear           ' limpa conteúdo e formatação somente A:B
-        .Range("A1").Value = "Nome da Planilha"
-        .Range("B1").Value = "Link"
-        
-        ' Cabeçalho visível e com contraste
-        With .Range("A1:B1")
+        .Columns("A:B").Clear                               ' limpa conteúdo e formatação somente A:B
+        ' Linha 2 opcional livre para instruções se quiser
+        .Range("A3").Value = "Nome da Planilha"
+        .Range("B3").Value = "Link"
+        With .Range("A3:B3")
             .Font.Bold = True
-            .Font.Color = RGB(0, 0, 0)          ' preto
-            .Interior.Color = RGB(217, 217, 217) ' cinza médio (não fica branco)
+            .Font.Color = RGB(0, 0, 0)
+            .Interior.Color = RGB(217, 217, 217)
             .HorizontalAlignment = xlCenter
             .VerticalAlignment = xlCenter
         End With
     End With
     
     ' === Preencher linhas com nomes de planilhas e links ===
-    i = 2
+    i = 4 ' dados começam logo abaixo do cabeçalho (linha 4)
     For Each ws In ThisWorkbook.Worksheets
         If ws.Name <> wsSumario.Name Then
             ' Nome
@@ -65,8 +64,8 @@ Sub CriarTabelaComHiperlinks()
         End If
     Next ws
     
-    ' === Criar/Atualizar Tabela em A:B ===
-    Set intervalo = wsSumario.Range("A1:B" & i - 1)
+    ' === Criar/Atualizar Tabela em A:B (inclui cabeçalho de A3:B3) ===
+    Set intervalo = wsSumario.Range("A3:B" & i - 1)
     
     ' Remover tabela sobreposta em A:B se existir
     On Error Resume Next
@@ -79,7 +78,7 @@ Sub CriarTabelaComHiperlinks()
     
     Set tabela = wsSumario.ListObjects.Add(xlSrcRange, intervalo, , xlYes)
     tabela.Name = nmTabela
-    tabela.TableStyle = "TableStyleMedium9" ' estilo visual agradável
+    tabela.TableStyle = "TableStyleMedium9"
     
     ' Formatação da área A:B
     With intervalo
@@ -110,16 +109,15 @@ Sub CriarTabelaComHiperlinks()
         .LineStyle = xlContinuous: .Weight = xlThick: .Color = RGB(64, 64, 64)
     End With
     
-    ' === Botão em C1 (com largura estendida para acomodar o texto) ===
+    ' === Botão em A1:B1 (topo), com largura suficiente para o texto ===
     On Error Resume Next
     wsSumario.Shapes(nmBotao).Delete
     On Error GoTo 0
     
-    ' Dimensão do botão: começa em C1 e ocupa C1:E1 (sem alterar células)
-    btnLeft = wsSumario.Range("C1").Left + 4
-    btnTop = wsSumario.Range("C1").Top + 2
-    btnWidth = wsSumario.Range("C1:E1").Width - 8
-    btnHeight = wsSumario.Range("C1").Height + 8
+    btnLeft = wsSumario.Range("A1").Left + 4
+    btnTop = wsSumario.Range("A1").Top + 2
+    btnWidth = wsSumario.Range("A1:B1").Width - 8
+    btnHeight = wsSumario.Range("A1").Height + 8
     
     Set btn = wsSumario.Shapes.AddShape( _
         Type:=msoShapeRoundedRectangle, _
@@ -208,7 +206,7 @@ Private Sub GarantirLinkVoltar(ByVal ws As Worksheet, ByVal wsSumario As Workshe
     ' Se já existe um, apenas formata a célula desse link e encerra
     If countLinks = 1 Then
         With linkPrincipal.Range
-            .Value = "? Voltar ao Sumário"
+            .Value = "<- Voltar ao Sumário"
             .Font.Color = RGB(0, 102, 204)
             .Font.Bold = True
             .Interior.Color = RGB(222, 235, 247)
@@ -224,7 +222,7 @@ Private Sub GarantirLinkVoltar(ByVal ws As Worksheet, ByVal wsSumario As Workshe
         If Len(c.Value) = 0 Then
             ws.Hyperlinks.Add _
                 Anchor:=c, Address:="", SubAddress:=alvoSubAddress, _
-                TextToDisplay:="? Voltar ao Sumário"
+                TextToDisplay:="<- Voltar ao Sumário"
             With c
                 .Font.Color = RGB(0, 102, 204)
                 .Font.Bold = True
