@@ -1,90 +1,90 @@
+
+Option Explicit
+
 Sub CriarTabelaComHiperlinks()
     Dim ws As Worksheet
-    Dim wsAtual As Worksheet
-    Dim i As Integer
-    Dim tabela As ListObject
+    Dim wsSumario As Worksheet
+    Dim i As Long
     Dim intervalo As Range
-    Dim linkCell As Range
-    Dim hl As Hyperlink
-    Dim linkExists As Boolean
-
-    ' Define a planilha atual
-    Set wsAtual = ActiveSheet
-
-    ' Remove a planilha "TabelaPlanilhas" se existir
-    On Error Resume Next
-    Application.DisplayAlerts = False
-    Sheets("TabelaPlanilhas").Delete
-    Application.DisplayAlerts = True
-    On Error GoTo 0
-
-    ' Adiciona cabeçalhos
-    wsAtual.Cells(1, 1).Value = "Nome da Planilha"
-    wsAtual.Cells(1, 2).Value = "Link"
+    Dim tabela As ListObject
+    Dim btn As Shape
+    Dim btnLeft As Double, btnTop As Double, btnWidth As Double, btnHeight As Double
     
-    ' Preenche a tabela com nomes de planilhas e hiperlinks
+    Const nmSumario As String = "Sumário"
+    Const nmTabela As String = "tbSumarioPlanilhas"
+    Const nmBotao As String = "btnAtualizarSumario"
+    
+    Application.ScreenUpdating = False
+    Application.EnableEvents = False
+    
+    ' === Garantir planilha Sumário ===
+    On Error Resume Next
+    Set wsSumario = ThisWorkbook.Worksheets(nmSumario)
+    On Error GoTo 0
+    
+    If wsSumario Is Nothing Then
+        Set wsSumario = ThisWorkbook.Worksheets.Add(After:=Sheets(Sheets.Count))
+        wsSumario.Name = nmSumario
+    End If
+    
+    ' === Só alterar colunas A e B do Sumário ===
+    With wsSumario
+        .Columns("A:B").Clear           ' limpa conteúdo e formatação somente A:B
+        .Range("A1").Value = "Nome da Planilha"
+        .Range("B1").Value = "Link"
+        
+        ' Cabeçalho visível e com contraste
+        With .Range("A1:B1")
+            .Font.Bold = True
+            .Font.Color = RGB(0, 0, 0)          ' preto
+            .Interior.Color = RGB(217, 217, 217) ' cinza médio (não fica branco)
+            .HorizontalAlignment = xlCenter
+            .VerticalAlignment = xlCenter
+        End With
+    End With
+    
+    ' === Preencher linhas com nomes de planilhas e links ===
     i = 2
     For Each ws In ThisWorkbook.Worksheets
-        If ws.Name <> wsAtual.Name Then
-            wsAtual.Cells(i, 1).Value = ws.Name
-            ' Adiciona apóstrofos ao redor do nome da planilha no hiperlink
-            wsAtual.Hyperlinks.Add Anchor:=wsAtual.Cells(i, 2), Address:="", SubAddress:="'" & ws.Name & "'!A1", TextToDisplay:="Acessar"
-            wsAtual.Cells(i, 2).Font.ColorIndex = xlAutomatic
+        If ws.Name <> wsSumario.Name Then
+            ' Nome
+            wsSumario.Cells(i, 1).Value = ws.Name
             
-            ' Verifica e adiciona/atualiza hiperlink para voltar à tabela principal
-            linkExists = False
-            For Each hl In ws.Hyperlinks
-                If hl.TextToDisplay = "Voltar à Tabela Principal" Then
-                    hl.Delete
-                    linkExists = True
-                    Exit For
-                End If
-            Next hl
+            ' Link para abrir a planilha
+            wsSumario.Hyperlinks.Add _
+                Anchor:=wsSumario.Cells(i, 2), _
+                Address:="", _
+                SubAddress:="'" & ws.Name & "'!A1", _
+                TextToDisplay:="Acessar"
+            wsSumario.Cells(i, 2).Font.ColorIndex = xlAutomatic
             
-            ' Encontra a célula correta para o novo hiperlink
-            Set linkCell = ws.Range("A1")
-            Do While linkCell.Value <> "" And linkCell.Value <> "Voltar à Tabela Principal"
-                Set linkCell = linkCell.Offset(0, 1)
-            Loop
+            ' === Garantir link único "Voltar ao Sumário" na linha 1 ===
+            GarantirLinkVoltar ws, wsSumario
             
-            ' Adiciona o hiperlink
-            ws.Hyperlinks.Add Anchor:=linkCell, Address:="", SubAddress:="'" & wsAtual.Name & "'!A1", TextToDisplay:="Voltar à Tabela Principal"
-            With linkCell
-                .Font.ColorIndex = xlAutomatic
-                .Font.Bold = True
-                .Interior.Color = RGB(211, 211, 211) ' Cinza claro
-                .HorizontalAlignment = xlCenter
-                .VerticalAlignment = xlCenter
-            End With
-            
-            ' Ajusta a largura da coluna onde o hiperlink foi adicionado
-            linkCell.EntireColumn.AutoFit
-
             i = i + 1
         End If
     Next ws
-
-    ' Define o intervalo para a tabela
-    Set intervalo = wsAtual.Range("A1:B" & i - 1)
     
-    ' Remove tabela existente se houver
+    ' === Criar/Atualizar Tabela em A:B ===
+    Set intervalo = wsSumario.Range("A1:B" & i - 1)
+    
+    ' Remover tabela sobreposta em A:B se existir
     On Error Resume Next
-    For Each tabela In wsAtual.ListObjects
-        If Not Intersect(tabela.Range, intervalo) Is Nothing Then
+    For Each tabela In wsSumario.ListObjects
+        If Not Intersect(tabela.Range, wsSumario.Range("A:B")) Is Nothing Then
             tabela.Unlist
         End If
     Next tabela
     On Error GoTo 0
     
-    ' Cria a nova tabela
-    Set tabela = wsAtual.ListObjects.Add(xlSrcRange, intervalo, , xlYes)
-    tabela.Name = "TabelaPlanilhas"
-    tabela.TableStyle = "TableStyleLight1"
+    Set tabela = wsSumario.ListObjects.Add(xlSrcRange, intervalo, , xlYes)
+    tabela.Name = nmTabela
+    tabela.TableStyle = "TableStyleMedium9" ' estilo visual agradável
     
-    ' Formata a tabela
+    ' Formatação da área A:B
     With intervalo
         .Font.Name = "Arial"
-        .Font.Size = 15
+        .Font.Size = 14
         .HorizontalAlignment = xlCenter
         .Borders(xlEdgeBottom).LineStyle = xlContinuous
         .Borders(xlEdgeLeft).LineStyle = xlContinuous
@@ -93,30 +93,149 @@ Sub CriarTabelaComHiperlinks()
         .Borders(xlInsideHorizontal).LineStyle = xlContinuous
         .Borders(xlInsideVertical).LineStyle = xlContinuous
     End With
-
-    ' Ajusta a largura das colunas
-    wsAtual.Columns("A:B").AutoFit
     
-    ' Adiciona a borda externa espessa à tabela
+    wsSumario.Columns("A:B").AutoFit
+    
+    ' Borda externa espessa e escura
     With tabela.Range.Borders(xlEdgeBottom)
-        .LineStyle = xlContinuous
-        .Weight = xlThick
+        .LineStyle = xlContinuous: .Weight = xlThick: .Color = RGB(64, 64, 64)
     End With
     With tabela.Range.Borders(xlEdgeLeft)
-        .LineStyle = xlContinuous
-        .Weight = xlThick
+        .LineStyle = xlContinuous: .Weight = xlThick: .Color = RGB(64, 64, 64)
     End With
     With tabela.Range.Borders(xlEdgeRight)
-        .LineStyle = xlContinuous
-        .Weight = xlThick
+        .LineStyle = xlContinuous: .Weight = xlThick: .Color = RGB(64, 64, 64)
     End With
     With tabela.Range.Borders(xlEdgeTop)
-        .LineStyle = xlContinuous
-        .Weight = xlThick
+        .LineStyle = xlContinuous: .Weight = xlThick: .Color = RGB(64, 64, 64)
     End With
+    
+    ' === Botão em C1 (com largura estendida para acomodar o texto) ===
+    On Error Resume Next
+    wsSumario.Shapes(nmBotao).Delete
+    On Error GoTo 0
+    
+    ' Dimensão do botão: começa em C1 e ocupa C1:E1 (sem alterar células)
+    btnLeft = wsSumario.Range("C1").Left + 4
+    btnTop = wsSumario.Range("C1").Top + 2
+    btnWidth = wsSumario.Range("C1:E1").Width - 8
+    btnHeight = wsSumario.Range("C1").Height + 8
+    
+    Set btn = wsSumario.Shapes.AddShape( _
+        Type:=msoShapeRoundedRectangle, _
+        Left:=btnLeft, _
+        Top:=btnTop, _
+        Width:=btnWidth, _
+        Height:=btnHeight)
+        
+    With btn
+        .Name = nmBotao
+        .Fill.ForeColor.RGB = RGB(0, 122, 204)   ' Azul Office
+        .Fill.Transparency = 0.06
+        .Line.ForeColor.RGB = RGB(255, 255, 255)
+        .Line.Weight = 1.5
+        .Shadow.Visible = msoTrue
+        
+        ' Texto do botão
+        .TextFrame2.TextRange.Characters.Text = "Atualizar Sumário"
+        With .TextFrame2.TextRange.Characters
+            .Font.Name = "Segoe UI"
+            .Font.Size = 14
+            .Font.Fill.ForeColor.RGB = RGB(255, 255, 255)
+            .Font.Bold = msoTrue
+        End With
+        
+        ' Alinhamentos corretos com TextFrame2:
+        .TextFrame2.TextRange.ParagraphFormat.Alignment = msoAlignCenter   ' horizontal
+        .TextFrame2.VerticalAnchor = msoAnchorMiddle                       ' vertical
+        
+        ' Fallback (compatibilidade) usando TextFrame clássico
+        On Error Resume Next
+        .TextFrame.HorizontalAlignment = xlCenter
+        .TextFrame.VerticalAlignment = xlCenter
+        On Error GoTo 0
+        
+        ' Ao clicar, executa novamente esta macro
+        .OnAction = "CriarTabelaComHiperlinks"
+    End With
+    
+    Application.EnableEvents = True
+    Application.ScreenUpdating = True
+    
+    MsgBox "Sumário atualizado com sucesso!", vbInformation
+End Sub
 
-    ' Informa ao usuário
-    MsgBox "Tabela criada com sucesso!", vbInformation
+' ===========================================================
+' Garante que exista apenas UM link "Voltar ao Sumário" na linha 1
+' - Se existir, formata e mantém
+' - Se houver múltiplos, remove extras
+' - Se não existir, cria na primeira célula vazia da linha 1 (até col 50)
+' ===========================================================
+Private Sub GarantirLinkVoltar(ByVal ws As Worksheet, ByVal wsSumario As Worksheet)
+    Dim hl As Hyperlink
+    Dim linkPrincipal As Hyperlink
+    Dim countLinks As Long
+    Dim alvoSubAddress As String
+    Dim rngLinha1 As Range
+    Dim c As Range
+    
+    alvoSubAddress = "'" & wsSumario.Name & "'!A1"
+    Set rngLinha1 = ws.Range(ws.Cells(1, 1), ws.Cells(1, 50)) ' A1:AX1 aprox
+    
+    ' Contar e identificar links que apontam para o Sumário
+    countLinks = 0
+    For Each hl In ws.Hyperlinks
+        If hl.SubAddress = alvoSubAddress Then
+            countLinks = countLinks + 1
+            If linkPrincipal Is Nothing Then Set linkPrincipal = hl
+        End If
+    Next hl
+    
+    ' Se houver mais de um, remove extras (mantém o primeiro encontrado)
+    If countLinks > 1 Then
+        For Each hl In ws.Hyperlinks
+            If hl.SubAddress = alvoSubAddress Then
+                If hl Is linkPrincipal Then
+                    ' mantém
+                Else
+                    hl.Delete
+                End If
+            End If
+        Next hl
+        countLinks = 1
+    End If
+    
+    ' Se já existe um, apenas formata a célula desse link e encerra
+    If countLinks = 1 Then
+        With linkPrincipal.Range
+            .Value = "? Voltar ao Sumário"
+            .Font.Color = RGB(0, 102, 204)
+            .Font.Bold = True
+            .Interior.Color = RGB(222, 235, 247)
+            .HorizontalAlignment = xlCenter
+            .VerticalAlignment = xlCenter
+            .EntireColumn.AutoFit
+        End With
+        Exit Sub
+    End If
+    
+    ' Não existe ainda: criar na primeira célula vazia da linha 1 (até col 50)
+    For Each c In rngLinha1
+        If Len(c.Value) = 0 Then
+            ws.Hyperlinks.Add _
+                Anchor:=c, Address:="", SubAddress:=alvoSubAddress, _
+                TextToDisplay:="? Voltar ao Sumário"
+            With c
+                .Font.Color = RGB(0, 102, 204)
+                .Font.Bold = True
+                .Interior.Color = RGB(222, 235, 247)
+                .HorizontalAlignment = xlCenter
+                .VerticalAlignment = xlCenter
+                .EntireColumn.AutoFit
+            End With
+            Exit For
+        End If
+    Next c
 End Sub
 
 ✅ O que a macro faz
