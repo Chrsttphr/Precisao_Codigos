@@ -1,0 +1,170 @@
+Option Explicit
+
+Sub PadronizarNomes()
+    Dim wb As Workbook
+    Dim wsSumario As Worksheet
+    Dim lastRow As Long
+    Dim r As Long
+    Dim nomeAtual As String, novoNomeBruto As String, novoNome As String
+    Dim wsAlvo As Worksheet
+    Dim renomeados As String, ignorados As String
+    Dim celNovo As Range
+    
+    Application.ScreenUpdating = False
+    Application.EnableEvents = False
+    
+    Set wb = ThisWorkbook
+    
+    ' Localiza a planilha Sumário
+    On Error Resume Next
+    Set wsSumario = wb.Worksheets("Sumário")
+    On Error GoTo 0
+    If wsSumario Is Nothing Then
+        MsgBox "A planilha 'Sumário' não foi encontrada. Rode primeiro 'CriarTabelaComHiperlinks'.", vbExclamation
+        GoTo SaidaSegura
+    End If
+    
+    ' Descobrir última linha pela coluna A (lista de planilhas), considerando que o cabeçalho está em A3 e os dados começam em A4
+    lastRow = wsSumario.Cells(wsSumario.Rows.Count, "A").End(xlUp).Row
+    If lastRow < 4 Then
+        MsgBox "Não há nomes de planilhas listados em A4:A no Sumário.", vbInformation
+        GoTo SaidaSegura
+    End If
+    
+    renomeados = ""
+    ignorados = ""
+    
+    ' Percorrer de A4 e ler novo nome em C4 (mesmo índice de linha)
+    For r = 4 To lastRow
+        nomeAtual = Trim$(CStr(wsSumario.Cells(r, "A").Value))
+        novoNomeBruto = CStr(wsSumario.Cells(r, "C").Value) ' você escreve em C4 em diante
+        Set celNovo = wsSumario.Cells(r, "C")
+        
+        ' Limpar marcações anteriores
+        celNovo.Interior.ColorIndex = xlColorIndexNone
+        celNovo.Font.Color = RGB(0, 0, 0)
+        
+        ' Pular se não há novo nome
+        If Len(Trim$(novoNomeBruto)) = 0 Then
+            ignorados = ignorados & vbCrLf & "- " & nomeAtual & " ? (vazio em C" & r & ")"
+            GoTo ProximoR
+        End If
+        
+        ' Não renomear o Sumário
+        If StrComp(nomeAtual, "Sumário", vbTextCompare) = 0 Then
+            ignorados = ignorados & vbCrLf & "- Sumário ? (não renomeado por regra)"
+            GoTo ProximoR
+        End If
+        
+        ' Verificar se a planilha existe
+        Set wsAlvo = Nothing
+        On Error Resume Next
+        Set wsAlvo = wb.Worksheets(nomeAtual)
+        On Error GoTo 0
+        
+        If wsAlvo Is Nothing Then
+            ignorados = ignorados & vbCrLf & "- " & nomeAtual & " ? (planilha não encontrada)"
+            GoTo ProximoR
+        End If
+        
+        ' Sanitizar o novo nome (remove inválidos e limita a 31)
+        novoNome = SanitizarNomePlanilha(Trim$(novoNomeBruto))
+        
+        If Len(novoNome) = 0 Then
+            ' Nome ficou vazio após limpeza ? marcar erro
+            celNovo.Interior.Color = RGB(255, 199, 206) ' vermelho claro (tema)
+            celNovo.Font.Color = RGB(156, 0, 6)
+            ignorados = ignorados & vbCrLf & "- " & nomeAtual & " ? """ & novoNomeBruto & """ (inválido/zerado após limpeza)"
+            GoTo ProximoR
+        End If
+        
+        ' Garantir nome único no arquivo
+        novoNome = NomeUnico(wb, novoNome)
+        
+        ' Se já é o mesmo nome, apenas registrar e seguir
+        If StrComp(wsAlvo.Name, novoNome, vbTextCompare) = 0 Then
+            ignorados = ignorados & vbCrLf & "- " & nomeAtual & " ? """ & novoNome & """ (já estava com este nome)"
+            GoTo ProximoR
+        End If
+        
+        ' Renomear
+        On Error Resume Next
+        wsAlvo.Name = novoNome
+        If Err.Number <> 0 Then
+            celNovo.Interior.Color = RGB(255, 199, 206)
+            celNovo.Font.Color = RGB(156, 0, 6)
+            ignorados = ignorados & vbCrLf & "- " & nomeAtual & " ? """ & novoNomeBruto & """ (falha ao renomear: " & Err.Description & ")"
+            Err.Clear
+        Else
+            renomeados = renomeados & vbCrLf & "• " & nomeAtual & " ? " & novoNome
+        End If
+        On Error GoTo 0
+        
+ProximoR:
+    Next r
+    
+SaidaSegura:
+    Application.EnableEvents = True
+    Application.ScreenUpdating = True
+    
+    Dim msg As String
+    msg = "Padronização concluída." & vbCrLf & vbCrLf
+    If Len(renomeados) > 0 Then
+        msg = msg & "Renomeados:" & renomeados & vbCrLf & vbCrLf
+    End If
+    If Len(ignorados) > 0 Then
+        msg = msg & "Ignorados / Atenção:" & ignorados & vbCrLf & vbCrLf
+    End If
+    msg = msg & "Agora clique em ""? Atualizar Sumário"" (botão em A1:B1) para atualizar a lista e os links."
+    
+    MsgBox msg, vbInformation, "PadronizarNomes"
+End Sub
+
+' Remove caracteres inválidos e limita a 31 caracteres
+Private Function SanitizarNomePlanilha(ByVal nm As String) As String
+    Dim inval As Variant, i As Long
+    inval = Array(":", "\", "/", "?", "*", "[", "]")
+    For i = LBound(inval) To UBound(inval)
+        nm = Replace(nm, inval(i), "")
+    Next i
+    
+    ' Remover aspas duplas por estética
+    nm = Replace(nm, """", "")
+    
+    ' Trimar e limitar 31
+    nm = Trim$(nm)
+    If Len(nm) > 31 Then nm = Left$(nm, 31)
+    
+    SanitizarNomePlanilha = nm
+End Function
+
+' Garante nome único: adiciona " (2)", " (3)"... se já existir
+Private Function NomeUnico(ByVal wb As Workbook, ByVal base As String) As String
+    Dim tentativa As String
+    Dim idx As Long
+    idx = 1
+    tentativa = base
+    
+    Do While ExistePlanilha(wb, tentativa)
+        idx = idx + 1
+        tentativa = SufixoNumerado(base, idx)
+        If Len(tentativa) > 31 Then
+            ' Se passar de 31, encurta o base para caber o sufixo
+            tentativa = Left$(base, 31 - Len(" (99)")) & " (" & idx & ")"
+        End If
+    Loop
+    
+    NomeUnico = tentativa
+End Function
+
+Private Function ExistePlanilha(ByVal wb As Workbook, ByVal nome As String) As Boolean
+    Dim ws As Worksheet
+    On Error Resume Next
+    Set ws = wb.Worksheets(nome)
+    ExistePlanilha = Not ws Is Nothing
+    On Error GoTo 0
+End Function
+
+Private Function SufixoNumerado(ByVal base As String, ByVal n As Long) As String
+    SufixoNumerado = base & " (" & n & ")"
+End Function
