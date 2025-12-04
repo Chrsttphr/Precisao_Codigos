@@ -168,3 +168,65 @@ End Function
 Private Function SufixoNumerado(ByVal base As String, ByVal n As Long) As String
     SufixoNumerado = base & " (" & n & ")"
 End Function
+
+✅ O que a macro faz
+Configuração inicial
+
+Desativa atualizações de tela e eventos para executar mais rápido e evitar interferências.
+Define o ThisWorkbook como alvo e tenta localizar a planilha “Sumário”.
+Valida se a planilha “Sumário” existe; se não, informa o usuário para rodar antes a macro de criação do sumário (CriarTabelaComHiperlinks) e encerra com segurança.
+
+Localização dos dados e varredura
+
+Considera que o cabeçalho está em A3 e os dados começam na linha 4.
+Determina a última linha preenchida em A (listas de planilhas).
+Percorre linha a linha de A4 até a última linha:
+
+Lê o nome atual da planilha em A.
+Lê o novo nome desejado em C (mesma linha).
+
+Regras e validações
+Para cada linha:
+
+Ignora se o novo nome (coluna C) estiver vazio — registra em “Ignorados”.
+Não renomeia a própria planilha “Sumário” — garante que o índice não será alterado.
+Confere se a planilha cujo nome está em A realmente existe no arquivo.
+Sanitiza o novo nome:
+
+Remove caracteres inválidos para nomes de planilhas: : \ / ? * [ ].
+Remove aspas " por estética.
+Trima espaços e limita a 31 caracteres (limite do Excel).
+
+Se, após a limpeza, o novo nome ficar vazio, marca a célula C da linha com vermelho claro (preenchimento RGB(255,199,206), fonte RGB(156,0,6)) e registra como ignorado.
+Garante unicidade: se já existir uma aba com o nome desejado, adiciona um sufixo automaticamente ( (2),  (3)…) até ficar único; se estourar 31 caracteres, encurta o base para acomodar o sufixo.
+
+Execução do rename
+
+Se o novo nome é diferente do nome atual, tenta renomear a planilha:
+
+Em caso de erro (por exemplo, nome inválido ou conflito), marca a célula C com vermelho, registra a mensagem de erro e segue para a próxima linha.
+Em caso de sucesso, registra a alteração no resumo: • NomeAtual → NovoNome.
+
+Formatação e feedback
+
+Limpa marcação anterior da célula C antes de começar cada linha (remove realces e volta a fonte preta).
+Ao final, reativa os eventos e a atualização de tela.
+Exibe um resumo:
+
+Renomeados: lista com cada alteração bem-sucedida.
+Ignorados / Atenção: lista com motivos (vazio em C, não encontrado, inválido, já estava com este nome, erro ao renomear).
+
+Orienta a clicar no botão “↻ Atualizar Sumário” (posicionado em A1:B1) para atualizar a lista e os links.
+
+Obs.: Notei que há alguns caracteres “?” em mensagens (ex.: "- Nome ? (vazio...)" e " ? Atualizar Sumário"). Se não foram intencionais (emoji/seta), recomendo substituí-los por seta ⟵ ou texto limpo, para manter a apresentação profissional.
+
+✅ Para que serve
+A macro padroniza os nomes das planilhas do arquivo com base no que você escreve no Sumário:
+Você digita os novos nomes em C4:C (na mesma linha dos nomes atuais em A4:A).
+A macro valida, ajusta e renomeia cada aba do arquivo conforme solicitado, mantendo o sumário protegido contra mudanças indevidas.
+
+✅ Benefícios
+Praticidade: Renomeia diversas abas em lote, direto de uma tela única (Sumário).
+Segurança: Evita erros comuns (caracteres inválidos, nomes repetidos, limite de 31 caracteres), marcando claramente os casos que precisam revisão.
+Organização: Mantém o Sumário como referência central, sem renomeá-lo, e facilita a padronização de nomenclaturas (útil em auditoria, relatórios mensais, consolidações).
+Feedback claro: Ao final, você sabe exatamente o que foi alterado e o que ficou pendente, e pode atualizar a lista com um clique no botão do topo.
